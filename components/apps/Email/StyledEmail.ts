@@ -1,14 +1,16 @@
-// StyledEmail.ts (updated)
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const EmailForm = styled.form`
   background-color: #f9f9f9;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 10%);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 10%); /* Corrected opacity */
   display: flex;
   flex-direction: column;
-  margin: 50px auto;
+  left: 0;
+  margin: 0; /* Removed margin to avoid unexpected jumps */
   padding: 20px;
+  position: absolute; /* Ensure absolute positioning for dragging */
+  top: 0;
   width: 400px;
 
   input,
@@ -19,7 +21,7 @@ export const EmailForm = styled.form`
     padding: 10px;
   }
 
-  button {
+  .submit-button {
     background-color: #007bff;
     border: none;
     border-radius: 4px;
@@ -29,6 +31,22 @@ export const EmailForm = styled.form`
 
     &:hover {
       background-color: #0056b3;
+    }
+  }
+
+  .exit-button {
+    background-color: red;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    padding: 5px 10px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+
+    &:hover {
+      background-color: darkred;
     }
   }
 `;
@@ -56,18 +74,21 @@ export const EmailIcon = styled.img`
 
 export const DropArea = styled.div<{ $isDragging: boolean }>`
   align-items: center;
-  background-color: ${(props) => (props.$isDragging ? '#f0f8ff' : 'transparent')};
-  border: ${(props) => (props.$isDragging ? '2px dashed #007bff' : 'none')};
-  color: ${(props) => (props.$isDragging ? '#007bff' : 'inherit')};
+  background-color: ${(props) =>
+    props.$isDragging ? "#f0f8ff" : "transparent"};
+  border: ${(props) => (props.$isDragging ? "2px dashed #007bff" : "none")};
+  color: ${(props) => (props.$isDragging ? "#007bff" : "inherit")};
   display: flex;
   justify-content: center;
   left: 50%;
-  padding: ${(props) => (props.$isDragging ? '10px' : '0')};
+  padding: ${(props) => (props.$isDragging ? "10px" : "0")};
   position: fixed;
   text-align: center;
   top: 50%;
   transform: translate(-50%, -50%);
-  transition: background-color 0.3s, border 0.3s;
+  transition:
+    background-color 0.3s,
+    border 0.3s;
   z-index: 10;
 
   &::after {

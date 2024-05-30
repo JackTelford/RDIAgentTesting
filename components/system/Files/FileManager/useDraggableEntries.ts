@@ -237,3 +237,5 @@ const useDraggableEntries = (
 };
 
 export default useDraggableEntries;
+
+// Path: components/system/Files/FileManager/useDraggableEntries.ts

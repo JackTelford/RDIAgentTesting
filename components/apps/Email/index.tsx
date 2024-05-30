@@ -1,21 +1,22 @@
-// Email Component (updated)
-import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { ComponentProcessProps } from 'components/system/Apps/RenderComponent';
-import { EmailForm, IconContainer, EmailIcon, DropArea } from './StyledEmail';
-import useFileDrop from 'components/system/Files/FileManager/useFileDrop';
+import React, { useState, useCallback, useEffect, useRef } from "react";
+import { ComponentProcessProps } from "components/system/Apps/RenderComponent";
+import { EmailForm, IconContainer, EmailIcon, DropArea } from "./StyledEmail";
+import useFileDrop from "components/system/Files/FileManager/useFileDrop";
 
 const Email: React.FC<ComponentProcessProps> = ({ id }) => {
-  const [email, setEmail] = useState('');
-  const [subject, setSubject] = useState('');
-  const [body, setBody] = useState('');
-  const [attachments, setAttachments] = useState<File[]>([]); // State to store attached files
-  const [isOpen, setIsOpen] = useState(false); // State to manage form visibility
-  const [isDragging, setIsDragging] = useState(false); // State to manage drag-over event
+  const [email, setEmail] = useState("");
+  const [subject, setSubject] = useState("");
+  const [body, setBody] = useState("");
+  const [attachments, setAttachments] = useState<File[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+
   const onFilesDropped = (files: FileList) => {
-    console.log('Files dropped in component:', FileList); // Debug log
     const newFiles = Array.from(files);
     setAttachments((prevFiles) => [...prevFiles, ...newFiles]);
   };
@@ -23,10 +24,10 @@ const Email: React.FC<ComponentProcessProps> = ({ id }) => {
   const { onDragOver, onDrop, onDragLeave } = useFileDrop({
     id,
     onFilesDropped,
-    onDragLeave: () => setIsDragging(false), // Reset drag state on drag leave
+    onDragLeave: () => setIsDragging(false),
     onDragOver: (e) => {
       e.preventDefault();
-      setIsDragging(true); // Set drag state on drag over
+      setIsDragging(true);
     },
   });
 
@@ -34,13 +35,11 @@ const Email: React.FC<ComponentProcessProps> = ({ id }) => {
     (e: React.FormEvent) => {
       e.preventDefault();
       alert(
-        `Email sent to: ${email}\nSubject: ${subject}\nBody: ${body}\nAttachments: ${attachments
-          .map((file) => file.name)
-          .join(', ')}`
+        `Email sent to: ${email}\nSubject: ${subject}\nBody: ${body}\nAttachments: ${attachments.map((file) => file.name).join(", ")}`
       );
-      setEmail('');
-      setSubject('');
-      setBody('');
+      setEmail("");
+      setSubject("");
+      setBody("");
       setAttachments([]);
     },
     [email, subject, body, attachments]
@@ -49,28 +48,84 @@ const Email: React.FC<ComponentProcessProps> = ({ id }) => {
   useEffect(() => {
     const form = formRef.current;
     const handleEnterKey = (e: KeyboardEvent) => {
-      if (e.key === 'Enter') {
+      if (e.key === "Enter") {
         handleSubmit(e as unknown as React.FormEvent);
       }
     };
 
-    form?.addEventListener('keydown', handleEnterKey);
+    form?.addEventListener("keydown", handleEnterKey);
     return () => {
-      form?.removeEventListener('keydown', handleEnterKey);
+      form?.removeEventListener("keydown", handleEnterKey);
     };
   }, [handleSubmit]);
 
+  useEffect(() => {
+    if (isOpen && typeof window !== "undefined" && formRef.current) {
+      const form = formRef.current;
+      const initialX = (window.innerWidth - form.offsetWidth) / 2 - 1000;
+      const initialY = (window.innerHeight - form.offsetHeight) / 2 - 500;
+      setPosition({ x: initialX, y: initialY });
+      form.style.left = `${initialX}px`;
+      form.style.top = `${initialY}px`;
+    }
+  }, [isOpen]);
+
   const handleIconDoubleClick = () => {
-    setIsOpen(true); // Show the email form on double-click
+    setIsOpen(true);
   };
 
   const handleDragStart = (e: React.DragEvent) => {
-    e.dataTransfer.setData('text/plain', id);
+    e.dataTransfer.setData("text/plain", id);
   };
+
+  const handleCloseForm = () => {
+    setIsOpen(false);
+  };
+
+  const handleMouseDown = (
+    e: React.MouseEvent<HTMLFormElement, MouseEvent>
+  ) => {
+    const form = formRef.current;
+    if (form) {
+      const rect = form.getBoundingClientRect();
+      const initialOffset = {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      };
+      setOffset(initialOffset);
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+    }
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    const newPosition = {
+      x: e.clientX - offset.x - 900,
+      y: e.clientY - offset.y - 500,
+    };
+    setPosition(newPosition);
+  };
+
+  const handleMouseUp = () => {
+    document.removeEventListener("mousemove", handleMouseMove);
+    document.removeEventListener("mouseup", handleMouseUp);
+  };
+
+  useEffect(() => {
+    const form = formRef.current;
+    if (form) {
+      form.style.left = `${position.x}px`;
+      form.style.top = `${position.y}px`;
+    }
+  }, [position]);
 
   return (
     <div onDragOver={onDragOver} onDrop={onDrop} onDragLeave={onDragLeave}>
-      <IconContainer draggable onDoubleClick={handleIconDoubleClick} onDragStart={handleDragStart}>
+      <IconContainer
+        draggable
+        onDoubleClick={handleIconDoubleClick}
+        onDragStart={handleDragStart}
+      >
         <EmailIcon src="/System/Icons/16x16/outlookemail.png" alt="Email" />
         <span>Email</span>
       </IconContainer>
@@ -81,19 +136,27 @@ const Email: React.FC<ComponentProcessProps> = ({ id }) => {
             onSubmit={handleSubmit}
             onDrop={(e) => {
               e.preventDefault();
-              setIsDragging(false); // Reset drag state on drop
+              setIsDragging(false);
               if (e.dataTransfer.files.length > 0) {
                 onFilesDropped(e.dataTransfer.files);
-              } else {
-                console.log('No files found in dataTransfer'); // Debug log
               }
             }}
-            onDragOver={(e) => e.preventDefault()} // To allow drop event
+            onDragOver={(e) => e.preventDefault()}
             onDragLeave={(e) => {
               e.preventDefault();
-              setIsDragging(false); // Reset drag state on drag leave
+              setIsDragging(false);
             }}
+            style={{
+              position: "absolute",
+              cursor: "move",
+              left: `${position.x}px`,
+              top: `${position.y}px`,
+            }}
+            onMouseDown={handleMouseDown}
           >
+            <button className="exit-button" onClick={handleCloseForm}>
+              X
+            </button>
             <h2>Send Email</h2>
             <input
               type="email"
@@ -120,7 +183,7 @@ const Email: React.FC<ComponentProcessProps> = ({ id }) => {
               <input
                 ref={fileInputRef}
                 type="file"
-                style={{ display: 'none' }}
+                style={{ display: "none" }}
                 multiple
                 onChange={(e) => {
                   if (e.target.files) {
@@ -128,7 +191,11 @@ const Email: React.FC<ComponentProcessProps> = ({ id }) => {
                   }
                 }}
               />
-              <button type="button" onClick={() => fileInputRef.current?.click()}>
+              <button
+                className="submit-button"
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+              >
                 Attach Files
               </button>
             </div>
@@ -137,7 +204,9 @@ const Email: React.FC<ComponentProcessProps> = ({ id }) => {
                 <li key={index}>{file.name}</li>
               ))}
             </ul>
-            <button type="submit">Send</button>
+            <button className="submit-button" type="submit">
+              Send
+            </button>
           </EmailForm>
         </DropArea>
       )}

@@ -1,4 +1,5 @@
-import styled from "styled-components";
+// StyledEmail.ts (updated)
+import styled from 'styled-components';
 
 export const EmailForm = styled.form`
   background-color: #f9f9f9;
@@ -35,7 +36,6 @@ export const EmailForm = styled.form`
 export const IconContainer = styled.div`
   align-items: center;
   display: flex;
-  margin-bottom: 20px;
 
   span {
     font-size: 18px;
@@ -46,8 +46,8 @@ export const IconContainer = styled.div`
 
 export const EmailIcon = styled.img`
   cursor: pointer;
-  height: 16px;
-  width: 16px;
+  height: 40px;
+  width: 40px;
 
   &:hover {
     opacity: 70%;
@@ -56,21 +56,18 @@ export const EmailIcon = styled.img`
 
 export const DropArea = styled.div<{ $isDragging: boolean }>`
   align-items: center;
-  background-color: ${(props) =>
-    props.$isDragging ? "#f0f8ff" : "transparent"};
-  border: ${(props) => (props.$isDragging ? "2px dashed #007bff" : "none")};
-  color: ${(props) => (props.$isDragging ? "#007bff" : "inherit")};
+  background-color: ${(props) => (props.$isDragging ? '#f0f8ff' : 'transparent')};
+  border: ${(props) => (props.$isDragging ? '2px dashed #007bff' : 'none')};
+  color: ${(props) => (props.$isDragging ? '#007bff' : 'inherit')};
   display: flex;
   justify-content: center;
   left: 50%;
-  padding: ${(props) => (props.$isDragging ? "10px" : "0")};
+  padding: ${(props) => (props.$isDragging ? '10px' : '0')};
   position: fixed;
   text-align: center;
   top: 50%;
   transform: translate(-50%, -50%);
-  transition:
-    background-color 0.3s,
-    border 0.3s;
+  transition: background-color 0.3s, border 0.3s;
   z-index: 10;
 
   &::after {

@@ -78,10 +78,19 @@ const useGlobalKeyboardShortcuts = (): void => {
     const onKeyDown = (event: KeyboardEvent): void => {
       updateKeyStates(event);
 
-      const { altKey, ctrlKey, key, shiftKey } = event;
+      const { altKey, ctrlKey, key, shiftKey, target } = event;
       const keyName = key?.toUpperCase();
 
       if (!keyName) return;
+
+      const isTextInput =
+        (target instanceof HTMLInputElement && target.type === "text") ||
+        target instanceof HTMLTextAreaElement ||
+        (target as HTMLElement).isContentEditable;
+
+      if (isTextInput) {
+        return; // Allow default behavior for text input elements
+      }
 
       if (shiftKey) {
         if (
@@ -93,7 +102,7 @@ const useGlobalKeyboardShortcuts = (): void => {
         }
       } else if (keyName === "F11") {
         haltEvent(event);
-        toggleFullscreen();
+        toggleFullscreen().then(r => r);
       } else if (
         document.activeElement === document.body &&
         keyName.startsWith("ARROW")
@@ -112,7 +121,7 @@ const useGlobalKeyboardShortcuts = (): void => {
           altBindingsRef.current?.[keyName]?.();
         } else if (keyName === "ESCAPE") {
           if (document.pointerLockElement) document.exitPointerLock();
-          else toggleFullscreen();
+          else toggleFullscreen().then(r => r);
         } else if (
           metaDown &&
           metaCombos.has(keyName) &&
@@ -124,6 +133,7 @@ const useGlobalKeyboardShortcuts = (): void => {
         }
       }
     };
+
     const onKeyUp = (event: KeyboardEvent): void => {
       updateKeyStates(event);
 

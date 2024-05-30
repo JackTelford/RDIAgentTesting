@@ -1,12 +1,13 @@
-import React, { useState, useCallback, useEffect, useRef } from "react";
-import { ComponentProcessProps } from "components/system/Apps/RenderComponent";
-import { EmailForm, IconContainer, EmailIcon, DropArea } from "./StyledEmail";
-import useFileDrop from "components/system/Files/FileManager/useFileDrop";
+// Email Component (updated)
+import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { ComponentProcessProps } from 'components/system/Apps/RenderComponent';
+import { EmailForm, IconContainer, EmailIcon, DropArea } from './StyledEmail';
+import useFileDrop from 'components/system/Files/FileManager/useFileDrop';
 
 const Email: React.FC<ComponentProcessProps> = ({ id }) => {
-  const [email, setEmail] = useState("");
-  const [subject, setSubject] = useState("");
-  const [body, setBody] = useState("");
+  const [email, setEmail] = useState('');
+  const [subject, setSubject] = useState('');
+  const [body, setBody] = useState('');
   const [attachments, setAttachments] = useState<File[]>([]); // State to store attached files
   const [isOpen, setIsOpen] = useState(false); // State to manage form visibility
   const [isDragging, setIsDragging] = useState(false); // State to manage drag-over event
@@ -14,7 +15,7 @@ const Email: React.FC<ComponentProcessProps> = ({ id }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const onFilesDropped = (files: FileList) => {
-    console.log("Files dropped in component:", files); // Debug log
+    console.log('Files dropped in component:', FileList); // Debug log
     const newFiles = Array.from(files);
     setAttachments((prevFiles) => [...prevFiles, ...newFiles]);
   };
@@ -35,11 +36,11 @@ const Email: React.FC<ComponentProcessProps> = ({ id }) => {
       alert(
         `Email sent to: ${email}\nSubject: ${subject}\nBody: ${body}\nAttachments: ${attachments
           .map((file) => file.name)
-          .join(", ")}`
+          .join(', ')}`
       );
-      setEmail("");
-      setSubject("");
-      setBody("");
+      setEmail('');
+      setSubject('');
+      setBody('');
       setAttachments([]);
     },
     [email, subject, body, attachments]
@@ -48,14 +49,14 @@ const Email: React.FC<ComponentProcessProps> = ({ id }) => {
   useEffect(() => {
     const form = formRef.current;
     const handleEnterKey = (e: KeyboardEvent) => {
-      if (e.key === "Enter") {
+      if (e.key === 'Enter') {
         handleSubmit(e as unknown as React.FormEvent);
       }
     };
 
-    form?.addEventListener("keydown", handleEnterKey);
+    form?.addEventListener('keydown', handleEnterKey);
     return () => {
-      form?.removeEventListener("keydown", handleEnterKey);
+      form?.removeEventListener('keydown', handleEnterKey);
     };
   }, [handleSubmit]);
 
@@ -64,16 +65,12 @@ const Email: React.FC<ComponentProcessProps> = ({ id }) => {
   };
 
   const handleDragStart = (e: React.DragEvent) => {
-    e.dataTransfer.setData("text/plain", id);
+    e.dataTransfer.setData('text/plain', id);
   };
 
   return (
     <div onDragOver={onDragOver} onDrop={onDrop} onDragLeave={onDragLeave}>
-      <IconContainer
-        draggable
-        onDoubleClick={handleIconDoubleClick}
-        onDragStart={handleDragStart}
-      >
+      <IconContainer draggable onDoubleClick={handleIconDoubleClick} onDragStart={handleDragStart}>
         <EmailIcon src="/System/Icons/16x16/outlookemail.png" alt="Email" />
         <span>Email</span>
       </IconContainer>
@@ -88,7 +85,7 @@ const Email: React.FC<ComponentProcessProps> = ({ id }) => {
               if (e.dataTransfer.files.length > 0) {
                 onFilesDropped(e.dataTransfer.files);
               } else {
-                console.log("No files found in dataTransfer"); // Debug log
+                console.log('No files found in dataTransfer'); // Debug log
               }
             }}
             onDragOver={(e) => e.preventDefault()} // To allow drop event
@@ -123,7 +120,7 @@ const Email: React.FC<ComponentProcessProps> = ({ id }) => {
               <input
                 ref={fileInputRef}
                 type="file"
-                style={{ display: "none" }}
+                style={{ display: 'none' }}
                 multiple
                 onChange={(e) => {
                   if (e.target.files) {
@@ -131,10 +128,7 @@ const Email: React.FC<ComponentProcessProps> = ({ id }) => {
                   }
                 }}
               />
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-              >
+              <button type="button" onClick={() => fileInputRef.current?.click()}>
                 Attach Files
               </button>
             </div>

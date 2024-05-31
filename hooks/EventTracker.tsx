@@ -120,9 +120,9 @@ export const useClipboardEventTracker = (options?: EventOptions): void => {
       logEvent("File dragged over", options);
     };
 
-    const handleDrop = (_event: DragEvent) => {
+    /*  const handleDrop = (_event: DragEvent) => {
       logEvent("File dropped", options);
-    };
+    };*/
 
     document.addEventListener("cut", handleCut);
     document.addEventListener("copy", handleCopy);
@@ -132,7 +132,7 @@ export const useClipboardEventTracker = (options?: EventOptions): void => {
     document.addEventListener("contextmenu", handleRightClick);
     document.addEventListener("dragstart", handleDragStart);
     document.addEventListener("dragover", handleDragOver);
-    document.addEventListener("drop", handleDrop);
+    /*    document.addEventListener("drop", handleDrop);*/
 
     return () => {
       document.removeEventListener("cut", handleCut);
@@ -143,7 +143,7 @@ export const useClipboardEventTracker = (options?: EventOptions): void => {
       document.removeEventListener("contextmenu", handleRightClick);
       document.removeEventListener("dragstart", handleDragStart);
       document.removeEventListener("dragover", handleDragOver);
-      document.removeEventListener("drop", handleDrop);
+      /*      document.removeEventListener("drop", handleDrop);*/
     };
   }, [options]);
 };

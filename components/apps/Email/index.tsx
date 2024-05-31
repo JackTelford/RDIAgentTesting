@@ -1,41 +1,24 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { ComponentProcessProps } from "components/system/Apps/RenderComponent";
 import { EmailForm, IconContainer, EmailIcon, DropArea } from "./StyledEmail";
-import useFileDrop from "components/system/Files/FileManager/useFileDrop";
 
-const Email: React.FC<ComponentProcessProps> = ({ id }) => {
+const Email: React.FC<ComponentProcessProps> = () => {
   const [email, setEmail] = useState("");
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
-  const [attachments, setAttachments] = useState<File[]>([]);
+  const [attachments, setAttachments] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [offset, setOffset] = useState({ x: 0, y: 0 });
-
-  const onFilesDropped = (files: FileList) => {
-    const newFiles = Array.from(files);
-    setAttachments((prevFiles) => [...prevFiles, ...newFiles]);
-  };
-
-  const { onDragOver, onDrop, onDragLeave } = useFileDrop({
-    id,
-    onFilesDropped,
-    onDragLeave: () => setIsDragging(false),
-    onDragOver: (e) => {
-      e.preventDefault();
-      setIsDragging(true);
-    },
-  });
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
       alert(
-        `Email sent to: ${email}\nSubject: ${subject}\nBody: ${body}\nAttachments: ${attachments.map((file) => file.name).join(", ")}`
+        `Email sent to: ${email}\nSubject: ${subject}\nBody: ${body}\nAttachments: ${attachments.join(", ")}`
       );
       setEmail("");
       setSubject("");
@@ -44,20 +27,6 @@ const Email: React.FC<ComponentProcessProps> = ({ id }) => {
     },
     [email, subject, body, attachments]
   );
-
-  useEffect(() => {
-    const form = formRef.current;
-    const handleEnterKey = (e: KeyboardEvent) => {
-      if (e.key === "Enter") {
-        handleSubmit(e as unknown as React.FormEvent);
-      }
-    };
-
-    form?.addEventListener("keydown", handleEnterKey);
-    return () => {
-      form?.removeEventListener("keydown", handleEnterKey);
-    };
-  }, [handleSubmit]);
 
   useEffect(() => {
     if (isOpen && typeof window !== "undefined" && formRef.current) {
@@ -72,10 +41,6 @@ const Email: React.FC<ComponentProcessProps> = ({ id }) => {
 
   const handleIconDoubleClick = () => {
     setIsOpen(true);
-  };
-
-  const handleDragStart = (e: React.DragEvent) => {
-    e.dataTransfer.setData("text/plain", id);
   };
 
   const handleCloseForm = () => {
@@ -119,33 +84,68 @@ const Email: React.FC<ComponentProcessProps> = ({ id }) => {
     }
   }, [position]);
 
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+
+    const droppedFiles: string[] = [];
+
+    if (e.dataTransfer.items) {
+      for (let i = 0; i < e.dataTransfer.items.length; i++) {
+        const item = e.dataTransfer.items[i];
+        if (item.kind === "file") {
+          const file = item.getAsFile();
+          if (file) {
+            droppedFiles.push(file.name);
+            console.log("File dropped:", file.name);
+          }
+        } else if (item.kind === "string") {
+          item.getAsString((data) => {
+            if (data.startsWith("[")) {
+              console.log("String dropped:", data);
+              droppedFiles.push(data);
+              setAttachments((prev) => [...prev, ...droppedFiles]);
+              updateAttachments(droppedFiles);
+            }
+          });
+        }
+      }
+    } else {
+      const files = Array.from(e.dataTransfer.files).map((file) => file.name);
+      droppedFiles.push(...files);
+      updateAttachments(droppedFiles);
+    }
+  };
+
+  const updateAttachments = (droppedFiles: string[]) => {
+    setAttachments((prev) => [...prev, ...droppedFiles]);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
   return (
-    <div onDragOver={onDragOver} onDrop={onDrop} onDragLeave={onDragLeave}>
-      <IconContainer
-        draggable
-        onDoubleClick={handleIconDoubleClick}
-        onDragStart={handleDragStart}
-      >
+    <div>
+      <IconContainer onDoubleClick={handleIconDoubleClick}>
         <EmailIcon src="/System/Icons/16x16/outlookemail.png" alt="Email" />
         <span>Email</span>
       </IconContainer>
       {isOpen && (
-        <DropArea $isDragging={isDragging}>
+        <DropArea
+          $isDragging={isDragging}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+          onDragLeave={handleDragLeave}
+        >
           <EmailForm
             ref={formRef}
             onSubmit={handleSubmit}
-            onDrop={(e) => {
-              e.preventDefault();
-              setIsDragging(false);
-              if (e.dataTransfer.files.length > 0) {
-                onFilesDropped(e.dataTransfer.files);
-              }
-            }}
-            onDragOver={(e) => e.preventDefault()}
-            onDragLeave={(e) => {
-              e.preventDefault();
-              setIsDragging(false);
-            }}
             style={{
               position: "absolute",
               cursor: "move",
@@ -180,30 +180,13 @@ const Email: React.FC<ComponentProcessProps> = ({ id }) => {
               required
             />
             <div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                style={{ display: "none" }}
-                multiple
-                onChange={(e) => {
-                  if (e.target.files) {
-                    onFilesDropped(e.target.files);
-                  }
-                }}
-              />
-              <button
-                className="submit-button"
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                Attach Files
-              </button>
+              <strong>Attachments:</strong>
+              <ul>
+                {attachments.map((attachment, index) => (
+                  <li key={index}>{attachment}</li>
+                ))}
+              </ul>
             </div>
-            <ul>
-              {attachments.map((file, index) => (
-                <li key={index}>{file.name}</li>
-              ))}
-            </ul>
             <button className="submit-button" type="submit">
               Send
             </button>

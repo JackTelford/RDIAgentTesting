@@ -188,7 +188,7 @@ const useFileContextMenu = (
                 ): void => {
                   mapFs(directory, existingHandle)
                     .then((mappedFolder) => {
-                      updateFolder("/", mappedFolder);
+                      updateFolder("/", mappedFolder).then((r) => r);
                       open("FileExplorer", {
                         url: join("/", mappedFolder),
                       });
@@ -282,7 +282,7 @@ const useFileContextMenu = (
                                 basename(transcodedFileName);
                               const transcodedDirName = dirname(path);
 
-                              updateFolder(
+                              await updateFolder(
                                 transcodedDirName,
                                 await createPath(
                                   baseTranscodedName,
@@ -329,7 +329,7 @@ const useFileContextMenu = (
                           );
                           const workBookDirName = dirname(path);
 
-                          updateFolder(
+                          await updateFolder(
                             workBookDirName,
                             await createPath(
                               basename(newFilePath),
@@ -367,7 +367,7 @@ const useFileContextMenu = (
                       );
                       const playlistDirName = dirname(path);
 
-                      updateFolder(
+                      await updateFolder(
                         playlistDirName,
                         await createPath(
                           basename(newFilePath),
@@ -531,7 +531,7 @@ const useFileContextMenu = (
               ...openWithFiltered.map((id): MenuItem => {
                 const { icon, title: label } = processDirectory[id] || {};
                 const action = (): void => {
-                  openFile(id, icon);
+                  openFile(id, icon).then((r) => r);
                 };
 
                 return { action, icon, label };
@@ -572,7 +572,7 @@ const useFileContextMenu = (
           ) {
             menuItems.unshift({
               action: () => {
-                openFile(pid, pidIcon);
+                openFile(pid, pidIcon).then((r) => r);
               },
               label: "Open in new window",
             });

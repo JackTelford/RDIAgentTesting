@@ -75,7 +75,8 @@
     "rtf.js": "^3.0.9",
     "styled-components": "^6.1.11",
     "utif": "https://github.com/photopea/UTIF.js",
-    "wasi-js": "^1.7.3"
+    "wasi-js": "^1.7.3",
+    "webpack": "^5.91.0"
   },
   "devDependencies": {
     "7z-wasm": "^1.1.0",

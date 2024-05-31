@@ -221,7 +221,8 @@ const useDraggableEntries = (
   }, [fileManagerRef]);
 
   useEffect(() => {
-    if (!isSelecting && focusedEntries.length > 1) updateDragImage();
+    if (!isSelecting && focusedEntries.length > 1)
+      updateDragImage().then((r) => r);
     else if (focusedEntries.length === 0) {
       adjustedCaptureOffsetRef.current = false;
     }

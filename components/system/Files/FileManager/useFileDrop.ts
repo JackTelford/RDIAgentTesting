@@ -29,7 +29,6 @@ type FileDropProps = {
   id?: string;
   onDragLeave?: (event: DragEvent | React.DragEvent<HTMLElement>) => void;
   onDragOver?: (event: DragEvent | React.DragEvent<HTMLElement>) => void;
-  onFilesDropped?: (files: FileList) => void; // Added this line
   updatePositions?: boolean;
 };
 
@@ -39,7 +38,6 @@ const useFileDrop = ({
   id,
   onDragLeave,
   onDragOver,
-  onFilesDropped, // Added this line
   updatePositions,
 }: FileDropProps): FileDrop => {
   const { url } = useProcesses();
@@ -155,15 +153,6 @@ const useFileDrop = ({
         );
       }
 
-      // Log the files dropped in the component
-      const files = event.dataTransfer?.files;
-      if (files) {
-        console.log(`Files dropped in component ${id}:`, files);
-        if (onFilesDropped) onFilesDropped(files); // Call the onFilesDropped callback if provided
-      } else {
-        console.log(`No files found in dataTransfer for component ${id}`);
-      }
-
       handleFileInputEvent(
         event as React.DragEvent,
         callback || updateProcessUrl,
@@ -176,3 +165,5 @@ const useFileDrop = ({
 };
 
 export default useFileDrop;
+
+// path components/system/Files/FileManager/useFileDrop.ts

@@ -468,9 +468,9 @@ export const groupChatEvents = (events: Event[]): ChatEvents => {
 };
 */
 
-// eslint-disable-next-line import/consistent-type-specifier-style
+// path: components/apps/Messenger/functions.ts
+
 import type { ProfilePointer } from "nostr-tools/lib/types/nip19";
-// eslint-disable-next-line import/consistent-type-specifier-style
 import type { NIP05Result } from "nostr-tools/lib/types/nip05";
 import {
   generatePrivateKey,
@@ -505,6 +505,30 @@ import {
 import { type MenuItem } from "contexts/menu/useMenuContextState";
 import { MILLISECONDS_IN_DAY, MILLISECONDS_IN_SECOND } from "utils/constants";
 
+// Utility function to check if a string is a valid hexadecimal
+const isValidHex = (str: string): boolean => /^[0-9a-fA-F]+$/.test(str);
+
+// Converts a public key to its hex representation if necessary.
+const getEncodedPublicKey = (publicKey: string): string => {
+  console.log("Attempting to encode public key:", publicKey); // Log the public key input
+
+  if (publicKey.startsWith("npub")) {
+    return publicKey;
+  }
+
+  // Ensure the publicKey is a valid hex string before encoding
+  if (!isValidHex(publicKey)) {
+    console.error("Invalid public key format detected:", publicKey); // Log the error
+    return publicKey; // Return the public key as-is if invalid
+  }
+
+  const encodedPublicKey = nip19.npubEncode(publicKey);
+  console.log("Encoded public key:", encodedPublicKey);
+  return encodedPublicKey;
+};
+
+export { getEncodedPublicKey, isValidHex };
+
 export const getRelayUrls = async (): Promise<string[]> => {
   if (window.nostr?.getRelays) {
     try {
@@ -524,7 +548,7 @@ export const getRelayUrls = async (): Promise<string[]> => {
   return BASE_RW_RELAYS;
 };
 
-export const toHexKey = (key: string): string => {
+/*export const toHexKey = (key: string): string => {
   if (
     key.startsWith("nprofile") ||
     key.startsWith("npub") ||
@@ -547,6 +571,43 @@ export const toHexKey = (key: string): string => {
   }
 
   return key;
+};*/
+
+export const toHexKey = (key: string): string => {
+  if (!key) {
+    console.error("Key is empty or undefined");
+    return "";
+  }
+
+  if (
+    key.startsWith("nprofile") ||
+    key.startsWith("npub") ||
+    key.startsWith("nsec")
+  ) {
+    try {
+      const { data } = nip19.decode(key);
+
+      if (typeof data === "string") return data;
+
+      if (
+        typeof data === "object" &&
+        typeof (data as ProfilePointer).pubkey === "string"
+      ) {
+        return (data as ProfilePointer).pubkey;
+      }
+    } catch (error) {
+      console.error("Error decoding key:", error);
+      return "";
+    }
+  }
+
+  // Ensure the key is a valid hex string
+  if (isValidHex(key)) {
+    return key;
+  } else {
+    console.error("Invalid key format, not a valid hex string:", key);
+    return "";
+  }
 };
 
 export const getPrivateKey = (): string =>
@@ -730,7 +791,7 @@ export const createProfileEvent = async (
     tags: [] as string[][],
   } as Event);
 
-export const createMessageEvent = async (
+/*export const createMessageEvent = async (
   message: string,
   recipientPublicKey: string
 ): Promise<Event> =>
@@ -739,11 +800,33 @@ export const createMessageEvent = async (
     created_at: getUnixTime(),
     kind: DM_KIND,
     tags: [["p", recipientPublicKey]],
+  } as Event);*/
+
+export const createMessageEvent = async (
+  message: string,
+  recipientPublicKey: string
+): Promise<Event> => {
+  // Convert the recipient's public key to hex
+  const hexRecipientPublicKey = toHexKey(recipientPublicKey);
+
+  // Ensure the public key is valid before proceeding
+  if (!hexRecipientPublicKey) {
+    console.error("Invalid recipient public key:", recipientPublicKey);
+    throw new Error("Invalid recipient public key");
+  }
+
+  console.log("Hex recipient public key:", hexRecipientPublicKey);
+
+  return signEvent({
+    content: await encryptMessage(message, hexRecipientPublicKey),
+    created_at: getUnixTime(),
+    kind: DM_KIND,
+    tags: [["p", hexRecipientPublicKey]], // Use the hex key here
   } as Event);
+};
 
 const VALID_PICTURE_PROTOCOLS = new Set(["http", "https", "data"]);
 
-// Updated dataToProfile function
 export const dataToProfile = (
   publicKey: string,
   data?: ProfileData,
@@ -763,9 +846,9 @@ export const dataToProfile = (
   const [protocol = ""] = picture?.split(":") || [];
 
   // Properly encode public key if necessary
-  const encodedPublicKey = publicKey.startsWith("npub")
-    ? publicKey
-    : nip19.npubEncode(publicKey);
+  const encodedPublicKey = isValidHex(publicKey)
+    ? getEncodedPublicKey(publicKey)
+    : publicKey;
 
   return {
     about,
@@ -781,7 +864,7 @@ export const dataToProfile = (
       (npub || encodedPublicKey).slice(0, 12),
     website,
   };
-}; // Updated the function
+};
 
 export const getPublicHexFromNostrAddress = (key: string): string => {
   const nprofile = key.startsWith("nprofile");
@@ -938,4 +1021,3 @@ export const groupChatEvents = (events: Event[]): ChatEvents => {
 
   return groupedEvents;
 };
-// Path: components/apps/Messenger/functions.ts

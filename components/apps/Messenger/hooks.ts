@@ -276,6 +276,7 @@ export const useNostrProfile = (
   return publicKey ? profiles[publicKey] || dataToProfile(publicKey) : {};
 };
 */
+// path: components/apps/Messenger/hooks.ts
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 // eslint-disable-next-line import/consistent-type-specifier-style
@@ -529,8 +530,8 @@ export const useNostrProfile = (
             [publicKey]: dataToProfile(publicKey, metadata, created_at),
           }));
         }
-      } catch {
-        // Ignore errors parsing profile data
+      } catch (e) {
+        console.error("Error parsing profile data:", e); // Log the error
       }
     },
     [profiles, publicKey, setProfiles]

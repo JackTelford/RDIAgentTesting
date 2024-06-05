@@ -1,4 +1,4 @@
-import {
+import React, {
   createContext,
   memo,
   useContext,
@@ -58,7 +58,9 @@ export const HistoryProvider = memo<FC>(({ children }) => {
   useEffect(() => {
     if (!writeFile || !initialized.current) return;
 
-    writeFile(SEEN_EVENT_IDS_PATH, JSON.stringify(seenEventIds), true);
+    writeFile(SEEN_EVENT_IDS_PATH, JSON.stringify(seenEventIds), true).then(
+      (r) => r
+    );
   }, [seenEventIds, writeFile]);
 
   return (
@@ -81,3 +83,5 @@ export const HistoryProvider = memo<FC>(({ children }) => {
     </HistoryContext.Provider>
   );
 });
+
+// path components/apps/Messenger/HistoryContext.tsx

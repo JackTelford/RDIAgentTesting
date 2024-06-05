@@ -53,3 +53,5 @@ export const inRightOutLeft: MotionProps = {
 };
 
 export const SEEN_EVENTS_DEBOUNCE_MS = 16; // 60 FPS == Math.floor(1000 / 60)
+
+// path components/apps/Messenger/constants.ts

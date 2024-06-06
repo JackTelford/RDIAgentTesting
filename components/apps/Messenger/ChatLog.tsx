@@ -118,9 +118,7 @@ const ChatLog: FC<{ recipientPublicKey: string }> = ({
 export default ChatLog;
 */
 
-// Path: components/apps/Messenger/ChatLog.tsx
-
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, FC } from "react";
 import dynamic from "next/dynamic";
 import ChatProfile from "components/apps/Messenger/ChatProfile";
 import {
@@ -178,6 +176,7 @@ const ChatLog: FC<{ recipientPublicKey: string }> = ({
     if (messages) {
       decryptMessages();
       listRef.current?.scrollTo(0, listRef.current.scrollHeight);
+      console.log("Messages decrypted and displayed."); // Debug log
     }
   }, [decryptMessages, messages]);
 

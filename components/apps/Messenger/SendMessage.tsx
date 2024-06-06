@@ -118,9 +118,12 @@ const SendMessage: FC<{ recipientUserId: string }> = ({ recipientUserId }) => {
           return;
         }
         const event = await createMessageEvent(message, recipientUserId);
+        console.log("Created message event:", event); // Debug log
+
         sendingEvent(event);
         try {
           publish(event);
+          console.log("Message published:", event); // Debug log
         } catch (e) {
           console.error("Publish error:", e);
         }

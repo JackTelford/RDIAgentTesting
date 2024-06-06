@@ -470,6 +470,8 @@ export const groupChatEvents = (events: Event[]): ChatEvents => {
 
 // Path: components/apps/Messenger/functions.ts
 
+// Path: components/apps/Messenger/functions.ts
+
 import type { ProfilePointer } from "nostr-tools/lib/types/nip19";
 import type { NIP05Result } from "nostr-tools/lib/types/nip05";
 import {
@@ -507,12 +509,12 @@ import { MILLISECONDS_IN_DAY, MILLISECONDS_IN_SECOND } from "utils/constants";
 
 const isValidHex = (str: string): boolean => {
   const result = /^[0-9a-fA-F]+$/.test(str);
-  console.log(`Checking if string is valid hex: ${str} - Result: ${result}`);
+  /*console.log(`Checking if string is valid hex: ${str} - Result: ${result}`);*/
   return result;
 };
 
 const getEncodedPublicKey = (publicKey: string): string => {
-  console.log("Attempting to encode public key:", publicKey); // Added logging for public key input
+  /*  console.log("Attempting to encode public key:", publicKey); */ // Added logging for public key input
 
   if (publicKey.startsWith("npub")) {
     return publicKey;
@@ -524,7 +526,7 @@ const getEncodedPublicKey = (publicKey: string): string => {
   }
 
   const encodedPublicKey = nip19.npubEncode(publicKey);
-  console.log("Encoded public key:", encodedPublicKey); // Added logging for encoded public key
+  /*  console.log("Encoded public key:", encodedPublicKey);*/ // Added logging for encoded public key
   return encodedPublicKey;
 };
 

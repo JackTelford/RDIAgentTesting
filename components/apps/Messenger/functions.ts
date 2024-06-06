@@ -468,7 +468,7 @@ export const groupChatEvents = (events: Event[]): ChatEvents => {
 };
 */
 
-// path: components/apps/Messenger/functions.ts
+// Path: components/apps/Messenger/functions.ts
 
 import type { ProfilePointer } from "nostr-tools/lib/types/nip19";
 import type { NIP05Result } from "nostr-tools/lib/types/nip05";
@@ -505,25 +505,26 @@ import {
 import { type MenuItem } from "contexts/menu/useMenuContextState";
 import { MILLISECONDS_IN_DAY, MILLISECONDS_IN_SECOND } from "utils/constants";
 
-// Utility function to check if a string is a valid hexadecimal
-const isValidHex = (str: string): boolean => /^[0-9a-fA-F]+$/.test(str);
+const isValidHex = (str: string): boolean => {
+  const result = /^[0-9a-fA-F]+$/.test(str);
+  console.log(`Checking if string is valid hex: ${str} - Result: ${result}`);
+  return result;
+};
 
-// Converts a public key to its hex representation if necessary.
 const getEncodedPublicKey = (publicKey: string): string => {
-  console.log("Attempting to encode public key:", publicKey); // Log the public key input
+  console.log("Attempting to encode public key:", publicKey); // Added logging for public key input
 
   if (publicKey.startsWith("npub")) {
     return publicKey;
   }
 
-  // Ensure the publicKey is a valid hex string before encoding
   if (!isValidHex(publicKey)) {
-    console.error("Invalid public key format detected:", publicKey); // Log the error
-    return publicKey; // Return the public key as-is if invalid
+    console.error("Invalid public key format detected:", publicKey); // Added error logging for invalid public key
+    return publicKey;
   }
 
   const encodedPublicKey = nip19.npubEncode(publicKey);
-  console.log("Encoded public key:", encodedPublicKey);
+  console.log("Encoded public key:", encodedPublicKey); // Added logging for encoded public key
   return encodedPublicKey;
 };
 
@@ -548,6 +549,27 @@ export const getRelayUrls = async (): Promise<string[]> => {
   return BASE_RW_RELAYS;
 };
 
+// Keep the userIdToPublicKey as it is
+export const userIdToPublicKey: Record<string, string> = {
+  RDIUser1: "18dd27310b057e9de6b35f2e4f609ae5bac352773fa4cab7d098c5ea8389e7d9",
+  RDIUser2: "e4d65367cfb6c3b6fad9709f5084ac4929ebfed4099da150d9fc7d9efc5dc87b",
+  RDIUser3: "yourPublicKeyForRDIUser3", // Replace with the actual public key
+  RDIUser4: "yourPublicKeyForRDIUser4", // Replace with the actual public key
+  RDIUser5: "yourPublicKeyForRDIUser5", // Replace with the actual public key
+};
+
+// Function to get a public key from the userIdToPublicKey map
+export const getPublicKeyForUser = (userId: string): string => {
+  const publicKey = userIdToPublicKey[userId];
+  console.log(`User ID: ${userId}, Public Key: ${publicKey}`); // Added logging to debug public keys
+  if (!publicKey || !isValidHex(publicKey)) {
+    console.error(`Invalid public key for user: ${userId}`);
+    return "";
+  }
+  return publicKey;
+};
+
+// Function to convert key to hex
 export const toHexKey = (key: string): string => {
   if (
     key.startsWith("nprofile") ||
@@ -566,11 +588,36 @@ export const toHexKey = (key: string): string => {
         return (data as ProfilePointer).pubkey;
       }
     } catch {
-      return key;
+      return "";
     }
   }
 
   return key;
+};
+
+// Updated getPublicHexFromNostrAddress function to fix encoding
+export const getPublicHexFromNostrAddress = (key: string): string => {
+  const nprofile = key.startsWith("nprofile");
+  const nsec = key.startsWith("nsec");
+
+  if (nprofile || nsec || key.startsWith("npub")) {
+    try {
+      const { data } = nip19.decode(key) || {};
+      const hex = nprofile
+        ? (data as ProfilePointer)?.pubkey
+        : (data as string);
+
+      return nsec ? getPublicKey(hex) : hex;
+    } catch {
+      return "";
+    }
+  }
+
+  if (isValidHex(key)) {
+    return key;
+  }
+
+  return "";
 };
 
 export const getPrivateKey = (): string =>
@@ -635,6 +682,7 @@ export const decryptMessage = async (
   }
 };
 
+// Encrypt message function
 const encryptMessage = async (
   content: string,
   pubkey: string
@@ -643,11 +691,10 @@ const encryptMessage = async (
     return await (window.nostr?.nip04
       ? window.nostr.nip04.encrypt(pubkey, content)
       : nip04.encrypt(toHexKey(getPrivateKey()), pubkey, content));
-  } catch {
-    // Ignore failure to decrypt
+  } catch (error) {
+    console.error("Error encrypting message:", error);
+    return "";
   }
-
-  return "";
 };
 
 export const getMessages = (
@@ -754,26 +801,19 @@ export const createProfileEvent = async (
     tags: [] as string[][],
   } as Event);
 
-/*export const createMessageEvent = async (
-  message: string,
-  recipientPublicKey: string
-): Promise<Event> =>
-  signEvent({
-    content: await encryptMessage(message, recipientPublicKey),
-    created_at: getUnixTime(),
-    kind: DM_KIND,
-    tags: [["p", recipientPublicKey]],
-  } as Event);*/
-
+// Updated createMessageEvent function to handle invalid user IDs
 export const createMessageEvent = async (
   message: string,
-  recipientPublicKey: string
+  recipientUserId: string
 ): Promise<Event> => {
-  // Convert the recipient's public key to hex
-  const hexRecipientPublicKey = toHexKey(recipientPublicKey);
+  const recipientPublicKey = getPublicKeyForUser(recipientUserId); // Updated line
+  if (!recipientPublicKey) {
+    console.error("Invalid recipient user ID:", recipientUserId);
+    throw new Error("Invalid recipient user ID");
+  }
 
-  // Ensure the public key is valid before proceeding
-  if (!hexRecipientPublicKey) {
+  const hexRecipientPublicKey = toHexKey(recipientPublicKey);
+  if (!hexRecipientPublicKey || !isValidHex(hexRecipientPublicKey)) {
     console.error("Invalid recipient public key:", recipientPublicKey);
     throw new Error("Invalid recipient public key");
   }
@@ -784,7 +824,7 @@ export const createMessageEvent = async (
     content: await encryptMessage(message, hexRecipientPublicKey),
     created_at: getUnixTime(),
     kind: DM_KIND,
-    tags: [["p", hexRecipientPublicKey]], // Use the hex key here
+    tags: [["p", hexRecipientPublicKey]],
   } as Event);
 };
 
@@ -827,30 +867,6 @@ export const dataToProfile = (
       (npub || encodedPublicKey).slice(0, 12),
     website,
   };
-};
-
-export const getPublicHexFromNostrAddress = (key: string): string => {
-  const nprofile = key.startsWith("nprofile");
-  const nsec = key.startsWith("nsec");
-
-  if (nprofile || nsec || key.startsWith("npub")) {
-    try {
-      const { data } = nip19.decode(key) || {};
-      const hex = nprofile
-        ? (data as ProfilePointer)?.pubkey
-        : (data as string);
-
-      return nsec ? getPublicKey(hex) : hex;
-    } catch {
-      return "";
-    }
-  }
-
-  try {
-    return toHexKey(nip19.npubEncode(key));
-  } catch {
-    return "";
-  }
 };
 
 const verifiedNip05Addresses: Record<string, string | number> = {};

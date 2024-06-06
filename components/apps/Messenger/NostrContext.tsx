@@ -110,6 +110,7 @@ export const NostrProvider: FC<{ relayUrls: string[] }> = ({
 */
 
 // Path: components/apps/Messenger/NostrContext.tsx
+
 import { type Event as NostrEvent, type Relay, relayInit } from "nostr-tools";
 import {
   createContext,

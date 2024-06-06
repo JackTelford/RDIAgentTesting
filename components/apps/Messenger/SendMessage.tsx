@@ -85,6 +85,7 @@ export default SendMessage;
 */
 
 // Path: components/apps/Messenger/SendMessage.tsx
+
 import { useCallback, useRef, useState, FC } from "react";
 import { Send } from "components/apps/Messenger/Icons";
 import { useMessageContext } from "components/apps/Messenger/MessageContext";
@@ -93,18 +94,19 @@ import StyledSendMessage from "components/apps/Messenger/StyledSendMessage";
 import { UNKNOWN_PUBLIC_KEY } from "components/apps/Messenger/constants";
 import {
   createMessageEvent,
+  userIdToPublicKey,
   toHexKey,
 } from "components/apps/Messenger/functions";
 import Button from "styles/common/Button";
 import { haltEvent } from "utils/functions";
 
-const SendMessage: FC<{ recipientPublicKey: string }> = ({
-  recipientPublicKey,
-}) => {
+const SendMessage: FC<{ recipientUserId: string }> = ({ recipientUserId }) => {
   const { sendingEvent } = useMessageContext();
   const { publish } = useNostr();
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [canSend, setCanSend] = useState(false);
+
+  const recipientPublicKey = userIdToPublicKey[recipientUserId];
   const isUnknownKey = recipientPublicKey === UNKNOWN_PUBLIC_KEY;
 
   const sendMessage = useCallback(
@@ -115,7 +117,7 @@ const SendMessage: FC<{ recipientPublicKey: string }> = ({
           console.error("Invalid recipient public key:", recipientPublicKey);
           return;
         }
-        const event = await createMessageEvent(message, hexRecipientPublicKey);
+        const event = await createMessageEvent(message, recipientUserId);
         sendingEvent(event);
         try {
           publish(event);
@@ -128,7 +130,7 @@ const SendMessage: FC<{ recipientPublicKey: string }> = ({
         console.error("Error sending message:", error);
       }
     },
-    [publish, recipientPublicKey, sendingEvent]
+    [publish, recipientUserId, sendingEvent]
   );
 
   const updateHeight = useCallback(() => {

@@ -473,8 +473,6 @@ export default Messenger;
 */
 
 // Path: components/apps/Messenger/index.tsx
-
-// Path: components/apps/Messenger/index.tsx
 // Path: components/apps/Messenger/index.tsx
 
 import React, {
@@ -570,9 +568,13 @@ const NostrChat: FC<NostrChatProps> = ({
     (recipientKey: string): boolean => {
       const hexKey = getPublicHexFromNostrAddress(recipientKey);
 
-      if (hexKey) changeRecipient(hexKey);
-
-      return Boolean(hexKey);
+      if (hexKey) {
+        changeRecipient(hexKey);
+        return true;
+      } else {
+        console.error("Invalid recipient public key:", recipientKey);
+        return false;
+      }
     },
     [changeRecipient]
   );
@@ -640,7 +642,8 @@ const NostrChat: FC<NostrChatProps> = ({
                 <To setRecipientKey={setRecipientKey} />
               )}
               <ChatLog recipientPublicKey={selectedRecipientKey} />
-              <SendMessage recipientPublicKey={selectedRecipientKey} />
+              <SendMessage recipientUserId={selectedRecipientKey} />{" "}
+              {/* Updated line */}
             </StyledChatContainer>
           ) : (
             <StyledContacts
@@ -655,17 +658,36 @@ const NostrChat: FC<NostrChatProps> = ({
                     unreadEvents.includes(lastEvents[contactKey])
                 )
                 .map((contactKey, index) => {
-                  // Ensure `contactKey` is a string, if not, convert it to a string
+                  if (!contactKey) {
+                    // New line: Check for undefined or empty contactKey
+                    console.error(`Invalid contact key: ${contactKey}`); // New line
+                    return null; // New line: Skip rendering this Contact component if invalid
+                  }
+
                   const uniqueKey =
                     typeof contactKey === "string"
                       ? contactKey
                       : JSON.stringify(contactKey);
+
+                  if (!uniqueKey || uniqueKey.trim() === "") {
+                    // New line: Check for undefined or empty uniqueKey
+                    console.error(`Invalid unique key format: ${contactKey}`); // New line
+                    return null; // New line: Skip rendering this Contact component if invalid
+                  }
+
+                  const hexKey = toHexKey(uniqueKey); // Added validation for contactKey
+                  if (!hexKey) {
+                    // New line
+                    console.error(`Invalid hex key format: ${uniqueKey}`); // New line
+                    return null; // New line: Skip rendering this Contact component if invalid
+                  }
+
                   return (
                     <Contact
                       key={`${uniqueKey}-${index}`} // Ensure unique keys by combining uniqueKey and index
                       lastEvent={lastEvents[contactKey]}
-                      onClick={() => changeRecipient(contactKey, events)}
-                      pubkey={contactKey}
+                      onClick={() => changeRecipient(hexKey, events)}
+                      pubkey={hexKey}
                       publicKey={publicKey}
                       unreadEvent={
                         hideReadMessages ||

@@ -522,6 +522,7 @@ import { type ComponentProcessProps } from "components/system/Apps/RenderCompone
 import { useProcesses } from "contexts/process";
 import { MILLISECONDS_IN_DAY } from "utils/constants";
 import { haltEvent } from "utils/functions";
+import index from "isomorphic-git";
 
 type NostrChatProps = {
   processId: string;
@@ -653,19 +654,26 @@ const NostrChat: FC<NostrChatProps> = ({
                     !hideReadMessages ||
                     unreadEvents.includes(lastEvents[contactKey])
                 )
-                .map((contactKey) => (
-                  <Contact
-                    key={contactKey} // Ensure a unique key
-                    lastEvent={lastEvents[contactKey]}
-                    onClick={() => changeRecipient(contactKey, events)}
-                    pubkey={contactKey}
-                    publicKey={publicKey}
-                    unreadEvent={
-                      hideReadMessages ||
-                      unreadEvents.includes(lastEvents[contactKey])
-                    }
-                  />
-                ))}
+                .map((contactKey, index) => {
+                  // Ensure `contactKey` is a string, if not, convert it to a string
+                  const uniqueKey =
+                    typeof contactKey === "string"
+                      ? contactKey
+                      : JSON.stringify(contactKey);
+                  return (
+                    <Contact
+                      key={`${uniqueKey}-${index}`} // Ensure unique keys by combining uniqueKey and index
+                      lastEvent={lastEvents[contactKey]}
+                      onClick={() => changeRecipient(contactKey, events)}
+                      pubkey={contactKey}
+                      publicKey={publicKey}
+                      unreadEvent={
+                        hideReadMessages ||
+                        unreadEvents.includes(lastEvents[contactKey])
+                      }
+                    />
+                  );
+                })}
               <GetMoreMessages setSince={setSince} />
             </StyledContacts>
           )}

@@ -548,7 +548,7 @@ export const getRelayUrls = async (): Promise<string[]> => {
   return BASE_RW_RELAYS;
 };
 
-/*export const toHexKey = (key: string): string => {
+export const toHexKey = (key: string): string => {
   if (
     key.startsWith("nprofile") ||
     key.startsWith("npub") ||
@@ -571,43 +571,6 @@ export const getRelayUrls = async (): Promise<string[]> => {
   }
 
   return key;
-};*/
-
-export const toHexKey = (key: string): string => {
-  if (!key) {
-    console.error("Key is empty or undefined");
-    return "";
-  }
-
-  if (
-    key.startsWith("nprofile") ||
-    key.startsWith("npub") ||
-    key.startsWith("nsec")
-  ) {
-    try {
-      const { data } = nip19.decode(key);
-
-      if (typeof data === "string") return data;
-
-      if (
-        typeof data === "object" &&
-        typeof (data as ProfilePointer).pubkey === "string"
-      ) {
-        return (data as ProfilePointer).pubkey;
-      }
-    } catch (error) {
-      console.error("Error decoding key:", error);
-      return "";
-    }
-  }
-
-  // Ensure the key is a valid hex string
-  if (isValidHex(key)) {
-    return key;
-  } else {
-    console.error("Invalid key format, not a valid hex string:", key);
-    return "";
-  }
 };
 
 export const getPrivateKey = (): string =>

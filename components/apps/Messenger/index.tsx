@@ -520,7 +520,7 @@ import { type ComponentProcessProps } from "components/system/Apps/RenderCompone
 import { useProcesses } from "contexts/process";
 import { MILLISECONDS_IN_DAY } from "utils/constants";
 import { haltEvent } from "utils/functions";
-import index from "isomorphic-git";
+/*import index from "isomorphic-git";*/
 
 type NostrChatProps = {
   processId: string;
@@ -659,9 +659,9 @@ const NostrChat: FC<NostrChatProps> = ({
                 )
                 .map((contactKey, index) => {
                   if (!contactKey) {
-                    // New line: Check for undefined or empty contactKey
+                    // Check for undefined or empty contactKey
                     console.error(`Invalid contact key: ${contactKey}`); // New line
-                    return null; // New line: Skip rendering this Contact component if invalid
+                    return null; // Skip rendering this Contact component if invalid
                   }
 
                   const uniqueKey =
@@ -670,21 +670,21 @@ const NostrChat: FC<NostrChatProps> = ({
                       : JSON.stringify(contactKey);
 
                   if (!uniqueKey || uniqueKey.trim() === "") {
-                    // New line: Check for undefined or empty uniqueKey
+                    // Check for undefined or empty uniqueKey
                     console.error(`Invalid unique key format: ${contactKey}`); // New line
-                    return null; // New line: Skip rendering this Contact component if invalid
+                    return null; // Skip rendering this Contact component if invalid
                   }
 
-                  const hexKey = toHexKey(uniqueKey); // Added validation for contactKey
+                  const hexKey = toHexKey(uniqueKey); // validation for contactKey
                   if (!hexKey) {
                     // New line
                     console.error(`Invalid hex key format: ${uniqueKey}`); // New line
-                    return null; // New line: Skip rendering this Contact component if invalid
+                    return null; // Skip rendering this Contact component if invalid
                   }
 
                   return (
                     <Contact
-                      key={`${uniqueKey}-${index}`} // Ensure unique keys by combining uniqueKey and index
+                      key={`${uniqueKey}-${index}`} // unique keys by combining uniqueKey and index
                       lastEvent={lastEvents[contactKey]}
                       onClick={() => changeRecipient(hexKey, events)}
                       pubkey={hexKey}
@@ -713,7 +713,7 @@ const Messenger: FC<ComponentProcessProps> = ({ id }) => {
   );
   const [relayUrls, setRelayUrls] = useState<string[] | undefined>();
   const initStarted = useRef(false);
-  const { names } = useNip05(); // Fetch existing and new contacts
+  const { names } = useNip05(); // new contacts
   const publicKey = usePublicKey();
 
   useEffect(() => {

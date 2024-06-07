@@ -112,18 +112,24 @@ const SendMessage: FC<{ recipientUserId: string }> = ({ recipientUserId }) => {
   const sendMessage = useCallback(
     async (message: string) => {
       try {
+        console.log(
+          `Recipient User ID: ${recipientUserId}, Public Key: ${recipientPublicKey}`
+        ); // Added debug log
+
         const hexRecipientPublicKey = toHexKey(recipientPublicKey);
         if (!hexRecipientPublicKey) {
           console.error("Invalid recipient public key:", recipientPublicKey);
           return;
         }
+        console.log("Hex recipient public key:", hexRecipientPublicKey); // Added debug log
+
         const event = await createMessageEvent(message, recipientUserId);
-        console.log("Created message event:", event); // Debug log
+        console.log("Created message event:", event); // Added debug log
 
         sendingEvent(event);
         try {
           publish(event);
-          console.log("Message published:", event); // Debug log
+          console.log("Message published:", event); // Added debug log
         } catch (e) {
           console.error("Publish error:", e);
         }
@@ -133,7 +139,7 @@ const SendMessage: FC<{ recipientUserId: string }> = ({ recipientUserId }) => {
         console.error("Error sending message:", error);
       }
     },
-    [publish, recipientUserId, sendingEvent]
+    [recipientUserId, recipientPublicKey, publish, sendingEvent] // Updated dependencies array
   );
 
   const updateHeight = useCallback(() => {

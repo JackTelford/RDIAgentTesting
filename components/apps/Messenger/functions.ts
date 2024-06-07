@@ -467,9 +467,6 @@ export const groupChatEvents = (events: Event[]): ChatEvents => {
   return groupedEvents;
 };
 */
-
-// Path: components/apps/Messenger/functions.ts
-
 // Path: components/apps/Messenger/functions.ts
 
 import type { ProfilePointer } from "nostr-tools/lib/types/nip19";
@@ -507,27 +504,15 @@ import {
 import { type MenuItem } from "contexts/menu/useMenuContextState";
 import { MILLISECONDS_IN_DAY, MILLISECONDS_IN_SECOND } from "utils/constants";
 
-const isValidHex = (str: string): boolean => {
-  const result = /^[0-9a-fA-F]+$/.test(str);
-  /*console.log(`Checking if string is valid hex: ${str} - Result: ${result}`);*/
-  return result;
-};
+const isValidHex = (str: string): boolean => /^[0-9a-fA-F]+$/.test(str);
 
 const getEncodedPublicKey = (publicKey: string): string => {
-  /*  console.log("Attempting to encode public key:", publicKey); */ // Added logging for public key input
-
-  if (publicKey.startsWith("npub")) {
-    return publicKey;
-  }
-
+  if (publicKey.startsWith("npub")) return publicKey;
   if (!isValidHex(publicKey)) {
-    console.error("Invalid public key format detected:", publicKey); // Added error logging for invalid public key
+    console.error("Invalid public key format detected:", publicKey);
     return publicKey;
   }
-
-  const encodedPublicKey = nip19.npubEncode(publicKey);
-  /*  console.log("Encoded public key:", encodedPublicKey);*/ // Added logging for encoded public key
-  return encodedPublicKey;
+  return nip19.npubEncode(publicKey);
 };
 
 export { getEncodedPublicKey, isValidHex };
@@ -563,9 +548,9 @@ export const userIdToPublicKey: Record<string, string> = {
 // Function to get a public key from the userIdToPublicKey map
 export const getPublicKeyForUser = (userId: string): string => {
   const publicKey = userIdToPublicKey[userId];
-  console.log(`User ID: ${userId}, Public Key: ${publicKey}`); // Added logging to debug public keys
+  console.log(`User ID: ${userId}, Public Key: ${publicKey}`); // added this line here
   if (!publicKey || !isValidHex(publicKey)) {
-    console.error(`Invalid public key for user: ${userId}`);
+    console.error(`Invalid public key for user: ${userId}`); // added this line here
     return "";
   }
   return publicKey;
@@ -694,7 +679,7 @@ const encryptMessage = async (
       ? window.nostr.nip04.encrypt(pubkey, content)
       : nip04.encrypt(toHexKey(getPrivateKey()), pubkey, content));
   } catch (error) {
-    console.error("Error encrypting message:", error);
+    console.error("Error encrypting message:", error); // added this line here
     return "";
   }
 };
@@ -808,7 +793,10 @@ export const createMessageEvent = async (
   message: string,
   recipientUserId: string
 ): Promise<Event> => {
-  const recipientPublicKey = getPublicKeyForUser(recipientUserId); // Updated line
+  const recipientPublicKey = getPublicKeyForUser(recipientUserId);
+  console.log(
+    `Recipient User ID: ${recipientUserId}, Public Key: ${recipientPublicKey}`
+  ); // Added debug log
   if (!recipientPublicKey) {
     console.error("Invalid recipient user ID:", recipientUserId);
     throw new Error("Invalid recipient user ID");
@@ -820,7 +808,7 @@ export const createMessageEvent = async (
     throw new Error("Invalid recipient public key");
   }
 
-  console.log("Hex recipient public key:", hexRecipientPublicKey);
+  console.log("Hex recipient public key:", hexRecipientPublicKey); // Added debug log
 
   return signEvent({
     content: await encryptMessage(message, hexRecipientPublicKey),

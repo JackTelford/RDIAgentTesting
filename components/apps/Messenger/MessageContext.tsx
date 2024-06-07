@@ -141,9 +141,9 @@ export const MessageProvider = memo<FC<MessageProviderProps>>(
     );
   }
 );
+*/
 
-// path components/apps/Messenger/MessageContext.tsx*/
-
+// Path: components/apps/Messenger/MessageContext.tsx
 import React, {
   createContext,
   memo,
@@ -194,17 +194,15 @@ export const useMessages = (recipientPublicKey: string): MessageData => {
     const filteredEvents = [
       ...chatEvents,
       ...events.filter(({ pubkey, tags }) => {
-        const isSender = pubkey === recipientPublicKey;
+        const isSender = pubkey === publicKey;
         const isRecipient = getKeyFromTags(tags) === recipientPublicKey;
-
-        return recipientPublicKey === publicKey
-          ? isSender && isRecipient
-          : isSender || isRecipient;
+        return isSender || isRecipient;
       }),
     ].filter(
       (event, index, currentEvents) =>
         currentEvents.findIndex(({ id }) => id === event.id) === index
     );
+
     const currentMessages = groupChatEvents(filteredEvents);
     console.log("Filtered events:", filteredEvents); // Debug log
     console.log("Grouped messages:", currentMessages); // Debug log

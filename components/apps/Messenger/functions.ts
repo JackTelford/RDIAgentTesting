@@ -643,16 +643,19 @@ export const getKeyFromTags = (tags: string[][] = []): string => {
 
 const decryptedContent: DecryptedContent = {};
 
+/*
 export const decryptMessage = async (
   id: string,
   content: string,
   pubkey: string
 ): Promise<string | false> => {
   if (decryptedContent[id] || decryptedContent[id] === false) {
+  console.log(`Returning cached decrypted content for ID: ${id}`);
     return decryptedContent[id];
   }
 
   decryptedContent[id] = content;
+  console.log(`Attempting to decrypt message with ID: ${id}, Content: ${content}, Pubkey: ${pubkey}`);
 
   try {
     const message = await (window.nostr?.nip04
@@ -660,11 +663,52 @@ export const decryptMessage = async (
       : nip04.decrypt(toHexKey(getPrivateKey()), pubkey, content));
 
     decryptedContent[id] = message;
+     console.log(`Decrypted message: ${message}`);
 
     return message;
   } catch {
     decryptedContent[id] = "";
 
+    return "";
+  }
+};
+*/
+
+export const decryptMessage = async (
+  id: string,
+  content: string,
+  pubkey: string
+): Promise<string | false> => {
+  if (decryptedContent[id] || decryptedContent[id] === false) {
+    console.log(`Returning cached decrypted content for ID: ${id}`);
+    return decryptedContent[id];
+  }
+
+  decryptedContent[id] = content;
+  console.log(
+    `Attempting to decrypt message with ID: ${id}, Content: ${content}, Pubkey: ${pubkey}`
+  );
+
+  try {
+    const privateKey = toHexKey(getPrivateKey());
+    const hexPubKey = toHexKey(pubkey);
+
+    console.log(`Private Key: ${privateKey}`);
+    console.log(`Hex Public Key: ${hexPubKey}`);
+
+    const message = await (window.nostr?.nip04
+      ? window.nostr.nip04.decrypt(pubkey, content)
+      : nip04.decrypt(privateKey, pubkey, content));
+
+    decryptedContent[id] = message;
+    console.log(`Decrypted message: ${message}`);
+    return message;
+  } catch (error) {
+    console.error(
+      `Error decrypting message with ID: ${id}, Content: ${content}, Pubkey: ${pubkey}`,
+      error
+    );
+    decryptedContent[id] = "";
     return "";
   }
 };

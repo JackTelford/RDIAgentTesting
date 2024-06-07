@@ -468,6 +468,7 @@ export const groupChatEvents = (events: Event[]): ChatEvents => {
 };
 */
 // Path: components/apps/Messenger/functions.ts
+// Path: components/apps/Messenger/functions.ts
 
 import type { ProfilePointer } from "nostr-tools/lib/types/nip19";
 import type { NIP05Result } from "nostr-tools/lib/types/nip05";
@@ -548,9 +549,9 @@ export const userIdToPublicKey: Record<string, string> = {
 // Function to get a public key from the userIdToPublicKey map
 export const getPublicKeyForUser = (userId: string): string => {
   const publicKey = userIdToPublicKey[userId];
-  console.log(`User ID: ${userId}, Public Key: ${publicKey}`); // added this line here
+  console.log(`User ID: ${userId}, Public Key: ${publicKey}`);
   if (!publicKey || !isValidHex(publicKey)) {
-    console.error(`Invalid public key for user: ${userId}`); // added this line here
+    console.error(`Invalid public key for user: ${userId}`);
     return "";
   }
   return publicKey;
@@ -643,37 +644,6 @@ export const getKeyFromTags = (tags: string[][] = []): string => {
 
 const decryptedContent: DecryptedContent = {};
 
-/*
-export const decryptMessage = async (
-  id: string,
-  content: string,
-  pubkey: string
-): Promise<string | false> => {
-  if (decryptedContent[id] || decryptedContent[id] === false) {
-  console.log(`Returning cached decrypted content for ID: ${id}`);
-    return decryptedContent[id];
-  }
-
-  decryptedContent[id] = content;
-  console.log(`Attempting to decrypt message with ID: ${id}, Content: ${content}, Pubkey: ${pubkey}`);
-
-  try {
-    const message = await (window.nostr?.nip04
-      ? window.nostr.nip04.decrypt(pubkey, content)
-      : nip04.decrypt(toHexKey(getPrivateKey()), pubkey, content));
-
-    decryptedContent[id] = message;
-     console.log(`Decrypted message: ${message}`);
-
-    return message;
-  } catch {
-    decryptedContent[id] = "";
-
-    return "";
-  }
-};
-*/
-
 export const decryptMessage = async (
   id: string,
   content: string,
@@ -690,15 +660,24 @@ export const decryptMessage = async (
   );
 
   try {
-    const privateKey = toHexKey(getPrivateKey());
+    // Convert and validate the public key
     const hexPubKey = toHexKey(pubkey);
+    console.log(`Converted hex public key: ${hexPubKey}`);
 
+    if (!isValidHex(hexPubKey)) {
+      throw new Error("Invalid hex key format for public key");
+    }
+
+    const privateKey = toHexKey(getPrivateKey());
     console.log(`Private Key: ${privateKey}`);
-    console.log(`Hex Public Key: ${hexPubKey}`);
+
+    if (!isValidHex(privateKey)) {
+      throw new Error("Invalid hex key format for private key");
+    }
 
     const message = await (window.nostr?.nip04
-      ? window.nostr.nip04.decrypt(pubkey, content)
-      : nip04.decrypt(privateKey, pubkey, content));
+      ? window.nostr.nip04.decrypt(hexPubKey, content)
+      : nip04.decrypt(privateKey, hexPubKey, content));
 
     decryptedContent[id] = message;
     console.log(`Decrypted message: ${message}`);
@@ -723,7 +702,7 @@ const encryptMessage = async (
       ? window.nostr.nip04.encrypt(pubkey, content)
       : nip04.encrypt(toHexKey(getPrivateKey()), pubkey, content));
   } catch (error) {
-    console.error("Error encrypting message:", error); // added this line here
+    console.error("Error encrypting message:", error);
     return "";
   }
 };
@@ -840,7 +819,7 @@ export const createMessageEvent = async (
   const recipientPublicKey = getPublicKeyForUser(recipientUserId);
   console.log(
     `Recipient User ID: ${recipientUserId}, Public Key: ${recipientPublicKey}`
-  ); // Added debug log
+  );
   if (!recipientPublicKey) {
     console.error("Invalid recipient user ID:", recipientUserId);
     throw new Error("Invalid recipient user ID");
@@ -852,7 +831,7 @@ export const createMessageEvent = async (
     throw new Error("Invalid recipient public key");
   }
 
-  console.log("Hex recipient public key:", hexRecipientPublicKey); // Added debug log
+  console.log("Hex recipient public key:", hexRecipientPublicKey);
 
   return signEvent({
     content: await encryptMessage(message, hexRecipientPublicKey),

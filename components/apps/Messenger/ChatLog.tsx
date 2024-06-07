@@ -175,9 +175,14 @@ const ChatLog: FC<{ recipientPublicKey: string }> = ({
 
   useEffect(() => {
     if (messages) {
+      console.log("Current messages:", messages);
       decryptMessages();
+      console.log("Messages after decryption:", messages);
       listRef.current?.scrollTo(0, listRef.current.scrollHeight);
+      console.log("Current scroll height:", listRef.current?.scrollHeight);
       console.log("Messages decrypted and displayed."); // Debug log
+    } else {
+      console.log("No messages to decrypt and display.");
     }
   }, [decryptMessages, messages]);
 

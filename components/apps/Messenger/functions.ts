@@ -468,8 +468,6 @@ export const groupChatEvents = (events: Event[]): ChatEvents => {
 };
 */
 // Path: components/apps/Messenger/functions.ts
-// Path: components/apps/Messenger/functions.ts
-
 import type { ProfilePointer } from "nostr-tools/lib/types/nip19";
 import type { NIP05Result } from "nostr-tools/lib/types/nip05";
 import {
@@ -644,6 +642,10 @@ export const getKeyFromTags = (tags: string[][] = []): string => {
 
 const decryptedContent: DecryptedContent = {};
 
+// components/apps/Messenger/functions.ts
+
+// components/apps/Messenger/functions.ts
+
 export const decryptMessage = async (
   id: string,
   content: string,
@@ -660,20 +662,27 @@ export const decryptMessage = async (
   );
 
   try {
-    // Convert and validate the public key
-    const hexPubKey = toHexKey(pubkey);
-    console.log(`Converted hex public key: ${hexPubKey}`);
+    // Convert user ID to hex public key format
+    const userPublicKey = getPublicKeyForUser(pubkey);
+    if (!userPublicKey) {
+      console.error(`Invalid public key for user: ${pubkey}`);
+      throw new Error("Invalid user public key");
+    }
 
+    // Convert and validate the public key
+    const hexPubKey = toHexKey(userPublicKey);
     if (!isValidHex(hexPubKey)) {
+      console.error(`Invalid hex key format for public key: ${hexPubKey}`);
       throw new Error("Invalid hex key format for public key");
     }
+    console.log(`Converted hex public key: ${hexPubKey}`);
 
     const privateKey = toHexKey(getPrivateKey());
-    console.log(`Private Key: ${privateKey}`);
-
     if (!isValidHex(privateKey)) {
+      console.error(`Invalid hex key format for private key: ${privateKey}`);
       throw new Error("Invalid hex key format for private key");
     }
+    console.log(`Private Key: ${privateKey}`);
 
     const message = await (window.nostr?.nip04
       ? window.nostr.nip04.decrypt(hexPubKey, content)
@@ -687,8 +696,8 @@ export const decryptMessage = async (
       `Error decrypting message with ID: ${id}, Content: ${content}, Pubkey: ${pubkey}`,
       error
     );
-    decryptedContent[id] = "";
-    return "";
+    decryptedContent[id] = false;
+    return false;
   }
 };
 
@@ -812,6 +821,8 @@ export const createProfileEvent = async (
   } as Event);
 
 // Updated createMessageEvent function to handle invalid user IDs
+// components/apps/Messenger/functions.ts
+
 export const createMessageEvent = async (
   message: string,
   recipientUserId: string

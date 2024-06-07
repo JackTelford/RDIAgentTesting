@@ -118,7 +118,7 @@ const ChatLog: FC<{ recipientPublicKey: string }> = ({
 export default ChatLog;
 */
 
-// path components/apps/Messenger/ChatLog.tsx
+//path components/apps/Messenger/ChatLog.tsx
 import { useCallback, useEffect, useRef, useState, FC } from "react";
 import dynamic from "next/dynamic";
 import ChatProfile from "components/apps/Messenger/ChatProfile";

@@ -85,6 +85,7 @@ export default SendMessage;
 */
 
 // Path: components/apps/Messenger/SendMessage.tsx
+// components/apps/Messenger/SendMessage.tsx
 
 import { useCallback, useRef, useState, FC } from "react";
 import { Send } from "components/apps/Messenger/Icons";
@@ -94,7 +95,7 @@ import StyledSendMessage from "components/apps/Messenger/StyledSendMessage";
 import { UNKNOWN_PUBLIC_KEY } from "components/apps/Messenger/constants";
 import {
   createMessageEvent,
-  userIdToPublicKey,
+  getPublicKeyForUser,
   toHexKey,
 } from "components/apps/Messenger/functions";
 import Button from "styles/common/Button";
@@ -106,7 +107,7 @@ const SendMessage: FC<{ recipientUserId: string }> = ({ recipientUserId }) => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [canSend, setCanSend] = useState(false);
 
-  const recipientPublicKey = userIdToPublicKey[recipientUserId];
+  const recipientPublicKey = getPublicKeyForUser(recipientUserId);
   const isUnknownKey = recipientPublicKey === UNKNOWN_PUBLIC_KEY;
 
   const sendMessage = useCallback(

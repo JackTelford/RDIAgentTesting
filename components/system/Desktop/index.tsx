@@ -1,11 +1,11 @@
-// path: components/system/Desktop/index.tsx
-
 import React, { FC, useRef } from "react";
 import StyledDesktop from "components/system/Desktop/StyledDesktop";
 import useWallpaper from "components/system/Desktop/Wallpapers/useWallpaper";
 import FileManager from "components/system/Files/FileManager";
 import { DESKTOP_PATH } from "utils/constants";
-import Email from "../../apps/Email"; // Correct import path for Email component
+import Email from "../../apps/Email";
+import RDIChat from "../../apps/RDIChat";
+import { UserProvider } from "../../apps/RDIChat/UserContext";
 
 // Define the props for the Desktop component to include id
 interface DesktopProps {
@@ -23,6 +23,9 @@ const Desktop: FC<DesktopProps> = ({ children, id }) => {
     <StyledDesktop ref={desktopRef}>
       {/* Pass the id prop to Email component */}
       <Email id={id} />
+      <UserProvider>
+        <RDIChat id={id} />
+      </UserProvider>
       <FileManager
         url={DESKTOP_PATH}
         view="icon"

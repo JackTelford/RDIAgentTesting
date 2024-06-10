@@ -198,3 +198,5 @@ const Email: React.FC<ComponentProcessProps> = () => {
 };
 
 export default Email;
+
+// path components/apps/Email/index.ts

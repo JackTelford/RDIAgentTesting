@@ -232,7 +232,7 @@ const SendMessage: FC<{ recipientUserId: string }> = ({ recipientUserId }) => {
         console.log("Created message event:", event); // Debug log
 
         // Send the event and publish it
-        sendingEvent(event);
+        sendingEvent(event); // <-- This is the key line to ensure state update
         try {
           publish(event);
           console.log("Message published:", event); // Debug log

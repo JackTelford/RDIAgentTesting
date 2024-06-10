@@ -337,7 +337,6 @@ export const useNostrEvents = ({
       const sub = relay.sub(subFilter);
 
       sub.on("event", (event: NostrEvent) => {
-        console.log("Received event:", event); // Debug log
         if (seenEventIds.current[event.id]) return;
 
         seenEventIds.current[event.id] = event;

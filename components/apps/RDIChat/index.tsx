@@ -9,13 +9,18 @@ import {
   ExitButton,
   IconContainer,
   ChatIcon,
+  UserListContainer,
+  UserItem,
+  BackButton,
 } from "./StyledRDIChat";
-import { USERS, useUser } from "./UserContext";
+import { USERS, useUser, userAvatars } from "./UserContext";
 
 const RDIChat: React.FC<ComponentProcessProps> = () => {
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState<string[]>([]);
-  const [selectedUser, setSelectedUser] = useState(USERS[1]); // Default to first user after RDI-Applicant
+  const [messages, setMessages] = useState<{ user: string; text: string }[]>(
+    []
+  );
+  const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
 
@@ -26,12 +31,16 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedUser) return;
     console.log(`Current User: ${currentUser}`);
     console.log(`Selected User: ${selectedUser}`);
     console.log(`Message: ${message}`);
     setMessages((prevMessages) => [
       ...prevMessages,
-      `${currentUser} to ${selectedUser}: ${message}`,
+      {
+        user: selectedUser,
+        text: `${currentUser} to ${selectedUser}: ${message}`,
+      },
     ]);
     setMessage("");
   };
@@ -107,43 +116,58 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
           }}
         >
           <ChatHeader onMouseDown={handleMouseDown}>
+            {selectedUser && (
+              <BackButton onClick={() => setSelectedUser(null)}>
+                Back
+              </BackButton>
+            )}
+            <h2>{selectedUser ? `Chat with ${selectedUser}` : "RDIChat"}</h2>
             <ExitButton onClick={handleCloseForm}>X</ExitButton>
-            <h2>RDIChat</h2>
           </ChatHeader>
-          <MessagesContainer>
-            {messages.map((msg, index) => (
-              <Message key={index}>{msg}</Message>
-            ))}
-          </MessagesContainer>
-          <form onSubmit={handleSubmit}>
-            <InputContainer>
-              <select
-                value={selectedUser}
-                onChange={(e) => {
-                  console.log("User selected", e.target.value);
-                  setSelectedUser(e.target.value);
-                }}
-                required
-              >
-                {USERS.filter((user) => user !== currentUser).map((user) => (
-                  <option key={user} value={user}>
-                    {user}
-                  </option>
-                ))}
-              </select>
-              <input
-                type="text"
-                value={message}
-                onChange={(e) => {
-                  console.log("Message input changed", e.target.value);
-                  setMessage(e.target.value);
-                }}
-                placeholder="Type your message..."
-                required
-              />
-              <button type="submit">Send</button>
-            </InputContainer>
-          </form>
+          {selectedUser ? (
+            <>
+              <MessagesContainer>
+                {messages
+                  .filter((msg) => msg.user === selectedUser)
+                  .map((msg, index) => (
+                    <Message key={index}>{msg.text}</Message>
+                  ))}
+              </MessagesContainer>
+              <form onSubmit={handleSubmit}>
+                <InputContainer>
+                  <input
+                    type="text"
+                    value={message}
+                    onChange={(e) => {
+                      console.log("Message input changed", e.target.value);
+                      setMessage(e.target.value);
+                    }}
+                    placeholder="Type your message..."
+                    required
+                  />
+                  <button type="submit">Send</button>
+                </InputContainer>
+              </form>
+            </>
+          ) : (
+            <UserListContainer>
+              {USERS.filter((user) => user !== currentUser).map((user) => (
+                <UserItem key={user} onClick={() => setSelectedUser(user)}>
+                  <img
+                    src={userAvatars[user as keyof typeof userAvatars]}
+                    alt={`${user}'s avatar`}
+                  />
+                  <div>
+                    <span>{user}</span>
+                    <small>
+                      {messages.find((msg) => msg.user === user)?.text ||
+                        "No messages yet"}
+                    </small>
+                  </div>
+                </UserItem>
+              ))}
+            </UserListContainer>
+          )}
         </ChatContainer>
       )}
     </div>

@@ -31,5 +31,3 @@ const SanitizedContent: FC<{ content: string; decrypted: boolean }> = ({
 };
 
 export default SanitizedContent;
-
-// path components/apps/Messenger/SanitizedContent.tsx

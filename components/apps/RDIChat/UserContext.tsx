@@ -9,6 +9,16 @@ export const USERS = [
   "RDIUSER5",
 ];
 
+// Add this at the top of your RDIChat file or in a separate constants file
+export const userAvatars: { [key in (typeof USERS)[number]]: string } = {
+  "RDI-Applicant": "System/Icons/avatars/rdi.png",
+  RDIUSER1: "System/Icons/avatars/agent1.png",
+  RDIUSER2: "System/Icons/avatars/agent2.png",
+  RDIUSER3: "System/Icons/avatars/agent3.png",
+  RDIUSER4: "System/Icons/avatars/agent4.png",
+  RDIUSER5: "System/Icons/avatars/agent5.png",
+};
+
 type UserContextType = {
   currentUser: string;
   setCurrentUser: React.Dispatch<React.SetStateAction<string>>;

@@ -27,6 +27,20 @@ export const ChatHeader = styled.div`
   }
 `;
 
+export const BackButton = styled.button`
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+  margin-right: 10px;
+  padding: 5px 10px;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+`;
+
 export const MessagesContainer = styled.div`
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -108,5 +122,41 @@ export const ChatIcon = styled.img`
 
   &:hover {
     opacity: 70%;
+  }
+`;
+
+export const UserListContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+export const UserItem = styled.div`
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  padding: 10px;
+
+  &:hover {
+    background-color: #f1f1f1;
+  }
+
+  img {
+    border-radius: 50%;
+    height: 40px;
+    margin-right: 10px;
+    width: 40px;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+
+    span {
+      font-weight: bold;
+    }
+
+    small {
+      color: #888;
+    }
   }
 `;

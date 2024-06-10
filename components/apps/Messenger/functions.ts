@@ -503,8 +503,10 @@ import {
 import { type MenuItem } from "contexts/menu/useMenuContextState";
 import { MILLISECONDS_IN_DAY, MILLISECONDS_IN_SECOND } from "utils/constants";
 
+// Helper function to check if a string is a valid hexadecimal
 const isValidHex = (str: string): boolean => /^[0-9a-fA-F]+$/.test(str);
 
+// Function to encode a public key to npub format if necessary
 const getEncodedPublicKey = (publicKey: string): string => {
   if (publicKey.startsWith("npub")) return publicKey;
   if (!isValidHex(publicKey)) {
@@ -516,6 +518,7 @@ const getEncodedPublicKey = (publicKey: string): string => {
 
 export { getEncodedPublicKey, isValidHex };
 
+// Function to retrieve relay URLs, including user's relays if available
 export const getRelayUrls = async (): Promise<string[]> => {
   if (window.nostr?.getRelays) {
     try {
@@ -535,7 +538,7 @@ export const getRelayUrls = async (): Promise<string[]> => {
   return BASE_RW_RELAYS;
 };
 
-// Keep the userIdToPublicKey as it is
+// Record to map user IDs to public keys
 export const userIdToPublicKey: Record<string, string> = {
   RDIUser1: "18dd27310b057e9de6b35f2e4f609ae5bac352773fa4cab7d098c5ea8389e7d9",
   RDIUser2: "e4d65367cfb6c3b6fad9709f5084ac4929ebfed4099da150d9fc7d9efc5dc87b",
@@ -555,7 +558,7 @@ export const getPublicKeyForUser = (userId: string): string => {
   return publicKey;
 };
 
-// Function to convert key to hex
+// Function to convert various key formats to hexadecimal format
 export const toHexKey = (key: string): string => {
   if (
     key.startsWith("nprofile") ||
@@ -581,7 +584,7 @@ export const toHexKey = (key: string): string => {
   return key;
 };
 
-// Updated getPublicHexFromNostrAddress function to fix encoding
+// Function to get public key in hexadecimal format from various key formats
 export const getPublicHexFromNostrAddress = (key: string): string => {
   const nprofile = key.startsWith("nprofile");
   const nsec = key.startsWith("nsec");
@@ -606,9 +609,11 @@ export const getPublicHexFromNostrAddress = (key: string): string => {
   return "";
 };
 
+// Function to get the private key from local storage
 export const getPrivateKey = (): string =>
   localStorage.getItem(PRIVATE_KEY_IDB_NAME) || "";
 
+// Function to get existing public key or generate a new one
 export const maybeGetExistingPublicKey = async (): Promise<string> => {
   const idbKey = localStorage.getItem(PUBLIC_KEY_IDB_NAME) || "";
   let publicKey = "";
@@ -622,6 +627,7 @@ export const maybeGetExistingPublicKey = async (): Promise<string> => {
   return publicKey || idbKey || "";
 };
 
+// Function to get public key in hexadecimal format, generating a new key pair if necessary
 export const getPublicHexKey = (existingPublicKey?: string): string => {
   if (existingPublicKey) return toHexKey(existingPublicKey);
 
@@ -634,18 +640,17 @@ export const getPublicHexKey = (existingPublicKey?: string): string => {
   return toHexKey(newPublicKey);
 };
 
+// Function to extract a public key from event tags
 export const getKeyFromTags = (tags: string[][] = []): string => {
   const [, key = ""] = tags.find(([tag]) => tag === "p") || [];
 
   return key;
 };
 
+// Cache for decrypted content
 const decryptedContent: DecryptedContent = {};
 
-// components/apps/Messenger/functions.ts
-
-// components/apps/Messenger/functions.ts
-
+// Function to decrypt a message
 export const decryptMessage = async (
   id: string,
   content: string,
@@ -701,7 +706,7 @@ export const decryptMessage = async (
   }
 };
 
-// Encrypt message function
+// Function to encrypt a message
 const encryptMessage = async (
   content: string,
   pubkey: string
@@ -716,6 +721,7 @@ const encryptMessage = async (
   }
 };
 
+// Function to get messages with filters for author and recipient public keys
 export const getMessages = (
   authorPublicKey: string,
   recipientPublicKey?: string,
@@ -730,7 +736,7 @@ export const getMessages = (
       since,
     },
     {
-      ...(recipientPublicKey ? { authors: [recipientPublicKey] } : {}),
+      authors: [recipientPublicKey || ""],
       "#p": [authorPublicKey],
       kinds: [DM_KIND],
       since,
@@ -738,12 +744,97 @@ export const getMessages = (
   ],
 });
 
+// Function to check for valid NIP-05 identifier
+export const isValidNIP05 = async (nip05: string): Promise<boolean> => {
+  if (typeof nip05 !== "string") return false;
+
+  const parts = nip05.split("@");
+
+  if (parts.length !== 2) return false;
+
+  try {
+    const result = await (
+      await fetch(`${BASE_NIP05_URL}${parts[1]}/.well-known/nostr.json`)
+    ).json();
+
+    if (typeof result.names === "object") {
+      return Object.values(result.names).includes(parts[0]);
+    }
+  } catch {
+    // Ignore fetch error
+  }
+
+  return false;
+};
+
+// Function to fetch NIP-05 profile data
+export const fetchNIP05Profile = async (
+  nip05: string
+): Promise<NIP05Result | undefined> => {
+  if (!nip05) return undefined;
+
+  try {
+    const profile = await (
+      await fetch(
+        `${BASE_NIP05_URL}${nip05.split("@")[1]}/.well-known/nostr.json`
+      )
+    ).json();
+
+    return profile.names ? { names: profile.names } : undefined;
+  } catch {
+    return undefined;
+  }
+};
+
+// Function to create an encrypted direct message event
+export const createEncryptedMessageEvent = async (
+  content: string,
+  pubkey: string
+): Promise<Event | undefined> => {
+  const hexPubKey = toHexKey(pubkey);
+
+  if (!hexPubKey) {
+    console.error("Invalid recipient public key");
+    return undefined;
+  }
+
+  const encryptedContent = await encryptMessage(content, hexPubKey);
+
+  if (!encryptedContent) {
+    console.error("Failed to encrypt message");
+    return undefined;
+  }
+
+  const event: Event = {
+    content: encryptedContent,
+    created_at: Math.floor(Date.now() / MILLISECONDS_IN_SECOND),
+    kind: DM_KIND,
+    pubkey: getPublicHexKey(),
+    tags: [["p", hexPubKey]],
+    id: "", // Initialize with an empty string
+    sig: "", // Initialize with an empty string
+  };
+
+  event.id = getEventHash(event);
+  event.sig = getSignature(event, getPrivateKey());
+
+  if (!validateEvent(event) || !verifySignature(event)) {
+    console.error("Failed to create a valid message event");
+    return undefined;
+  }
+
+  return event;
+};
+
+// Function to sort events in ascending order by creation time
 const ascCreatedAt = (a: Event, b: Event): number =>
   a.created_at - b.created_at;
 
+// Function to sort events in descending order by creation time
 export const descCreatedAt = (a: Event, b: Event): number =>
   b.created_at - a.created_at;
 
+// Function to create a short timestamp string from a Unix timestamp
 export const shortTimeStamp = (timestamp: number): string => {
   const now = Date.now();
   const time = new Date(timestamp * MILLISECONDS_IN_SECOND).getTime();
@@ -763,6 +854,7 @@ export const shortTimeStamp = (timestamp: number): string => {
   return `${seconds}s`;
 };
 
+// Function to create menu items for copying public and private keys
 export const copyKeyMenuItems = (
   hexKey: string,
   nsecHex?: string
@@ -787,6 +879,7 @@ export const copyKeyMenuItems = (
       ]),
 ];
 
+// Function to sign an event
 const signEvent = async (event: Event): Promise<Event> => {
   let signedEvent = event as VerifiedEvent;
 
@@ -808,8 +901,10 @@ const signEvent = async (event: Event): Promise<Event> => {
   return signedEvent;
 };
 
+// Function to get the current Unix timestamp
 const getUnixTime = (): number => Math.floor(Date.now() / 1000);
 
+// Function to create a profile event
 export const createProfileEvent = async (
   profile: ProfileData
 ): Promise<Event> =>
@@ -820,9 +915,7 @@ export const createProfileEvent = async (
     tags: [] as string[][],
   } as Event);
 
-// Updated createMessageEvent function to handle invalid user IDs
-// components/apps/Messenger/functions.ts
-
+// Function to create a message event
 export const createMessageEvent = async (
   message: string,
   recipientUserId: string
@@ -852,8 +945,10 @@ export const createMessageEvent = async (
   } as Event);
 };
 
+// Set of valid picture protocols
 const VALID_PICTURE_PROTOCOLS = new Set(["http", "https", "data"]);
 
+// Function to convert profile data to a NostrProfile object
 export const dataToProfile = (
   publicKey: string,
   data?: ProfileData,
@@ -893,10 +988,13 @@ export const dataToProfile = (
   };
 };
 
+// Cache for verified NIP-05 addresses
 const verifiedNip05Addresses: Record<string, string | number> = {};
 
+// Set of timeout errors
 const TIMEOUT_ERRORS = new Set([408, 504]);
 
+// Function to get the NIP-05 domain from an address and public key
 export const getNip05Domain = async (
   nip05address?: string,
   pubkey?: string
@@ -945,6 +1043,7 @@ export const getNip05Domain = async (
   return "";
 };
 
+// Function to get the WebSocket status icon based on the status code
 export const getWebSocketStatusIcon = (status?: number): string => {
   switch (status) {
     case WebSocket.prototype.CONNECTING:
@@ -958,15 +1057,18 @@ export const getWebSocketStatusIcon = (status?: number): string => {
   }
 };
 
+// Function to convert image links in a string to HTML image elements
 export const convertImageLinksToHtml = (content: string): string =>
   content.replace(
     /https?:\/\/\S+\.(?:png|jpg|jpeg|gif|webp)/gi,
     (match) => `<img decoding="async" loading="lazy" src="${match}" />`
   );
 
+// Function to convert newline characters in a string to HTML <br> elements
 export const convertNewLinesToBreaks = (content: string): string =>
   content.replace(/\n/g, "<br />");
 
+// Function to create a pretty chat timestamp from a Unix timestamp
 export const prettyChatTimestamp = (timestamp: number): string => {
   const date = new Date(timestamp * MILLISECONDS_IN_SECOND);
   const now = new Date();
@@ -1000,6 +1102,7 @@ export const prettyChatTimestamp = (timestamp: number): string => {
   });
 };
 
+// Function to group chat events by time gaps
 export const groupChatEvents = (events: Event[]): ChatEvents => {
   if (events.length === 0) return [];
 
@@ -1021,6 +1124,8 @@ export const groupChatEvents = (events: Event[]): ChatEvents => {
       groupedEvents.push([prettyChatTimestamp(created_at), [event]]);
     }
   });
+
+  console.log("Grouped events:", groupedEvents); // Debug log
 
   return groupedEvents;
 };

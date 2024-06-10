@@ -520,7 +520,6 @@ import { type ComponentProcessProps } from "components/system/Apps/RenderCompone
 import { useProcesses } from "contexts/process";
 import { MILLISECONDS_IN_DAY } from "utils/constants";
 import { haltEvent } from "utils/functions";
-/*import index from "isomorphic-git";*/
 
 type NostrChatProps = {
   processId: string;
@@ -530,6 +529,7 @@ type NostrChatProps = {
   wellKnownNames: Record<string, string>;
 };
 
+// Main chat component for Nostr chat application
 const NostrChat: FC<NostrChatProps> = ({
   processId,
   publicKey,
@@ -540,6 +540,8 @@ const NostrChat: FC<NostrChatProps> = ({
   const { setSeenEventIds } = useHistoryContext();
   const [selectedRecipientKey, setSelectedRecipientKey] = useState<string>("");
   const [hideReadMessages, setHideReadMessages] = useState<boolean>(false);
+
+  // Change the selected recipient and mark their messages as seen
   const changeRecipient = useCallback(
     (recipientKey: string, currentEvents?: Event[]) =>
       setSelectedRecipientKey((currentRecipientKey: string) => {
@@ -560,10 +562,14 @@ const NostrChat: FC<NostrChatProps> = ({
       }),
     [setSeenEventIds]
   );
+
+  // Manage Nostr contacts
   const { contactKeys, events, lastEvents, unreadEvents } = useNostrContacts(
     publicKey,
     wellKnownNames
   );
+
+  // Set the recipient's public key
   const setRecipientKey = useCallback(
     (recipientKey: string): boolean => {
       const hexKey = getPublicHexFromNostrAddress(recipientKey);
@@ -578,12 +584,14 @@ const NostrChat: FC<NostrChatProps> = ({
     },
     [changeRecipient]
   );
+
   const {
     processes: { [processId]: process },
     url: setUrl,
   } = useProcesses();
   const { url } = process || {};
 
+  // Update unread status for contacts
   useUnreadStatus(
     processId,
     contactKeys.filter((contactKey) =>
@@ -591,6 +599,7 @@ const NostrChat: FC<NostrChatProps> = ({
     ).length
   );
 
+  // Effect to handle URL changes
   useEffect(() => {
     if (
       !url ||
@@ -611,6 +620,7 @@ const NostrChat: FC<NostrChatProps> = ({
     }
   }, [processId, setUrl, url]);
 
+  // Effect to mark unread events as seen
   useEffect(() => {
     if (unreadEvents && selectedRecipientKey) {
       unreadEvents
@@ -642,8 +652,7 @@ const NostrChat: FC<NostrChatProps> = ({
                 <To setRecipientKey={setRecipientKey} />
               )}
               <ChatLog recipientPublicKey={selectedRecipientKey} />
-              <SendMessage recipientUserId={selectedRecipientKey} />{" "}
-              {/* Updated line */}
+              <SendMessage recipientUserId={selectedRecipientKey} />
             </StyledChatContainer>
           ) : (
             <StyledContacts
@@ -705,6 +714,7 @@ const NostrChat: FC<NostrChatProps> = ({
   );
 };
 
+// Main Messenger component for the application
 const Messenger: FC<ComponentProcessProps> = ({ id }) => {
   const [since, setSince] = useState(() => MILLISECONDS_IN_DAY);
   const timeSince = useMemo(
@@ -716,6 +726,7 @@ const Messenger: FC<ComponentProcessProps> = ({ id }) => {
   const { names } = useNip05(); // new contacts
   const publicKey = usePublicKey();
 
+  // Effect to initialize relay URLs once the public key is available
   useEffect(() => {
     if (initStarted.current || !publicKey) return;
 

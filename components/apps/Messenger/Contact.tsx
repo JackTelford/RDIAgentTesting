@@ -111,7 +111,6 @@ export default Contact;
 */
 
 // Path: components/apps/Messenger/Contact.tsx
-// Path: components/apps/Messenger/Contact.tsx
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { type Event } from "nostr-tools";
@@ -135,6 +134,7 @@ type ContactProps = {
   unreadEvent: boolean;
 };
 
+// Contact component for displaying a single contact in the chat list
 const Contact: FC<ContactProps> = ({
   lastEvent,
   onClick,
@@ -169,6 +169,7 @@ const Contact: FC<ContactProps> = ({
     [contextMenu, onClick, pubkey]
   );
 
+  // Effect to decrypt the last message content if visible
   useEffect(() => {
     if (content && isVisible) {
       decryptMessage(id, content, pubkey).then(
@@ -177,6 +178,7 @@ const Contact: FC<ContactProps> = ({
     }
   }, [content, id, isVisible, pubkey]);
 
+  // Effect to update the timestamp periodically
   useEffect(() => {
     let interval = 0;
 

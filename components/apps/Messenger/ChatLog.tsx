@@ -118,7 +118,8 @@ const ChatLog: FC<{ recipientPublicKey: string }> = ({
 export default ChatLog;
 */
 
-//path components/apps/Messenger/ChatLog.tsx
+// Path: components/apps/Messenger/ChatLog.tsx
+
 import { useCallback, useEffect, useRef, useState, FC } from "react";
 import dynamic from "next/dynamic";
 import ChatProfile from "components/apps/Messenger/ChatProfile";
@@ -145,6 +146,7 @@ const SanitizedContent = dynamic(
   () => import("components/apps/Messenger/SanitizedContent")
 );
 
+// ChatLog component for displaying chat messages
 const ChatLog: FC<{ recipientPublicKey: string }> = ({
   recipientPublicKey,
 }) => {
@@ -153,6 +155,8 @@ const ChatLog: FC<{ recipientPublicKey: string }> = ({
   const [decryptedContent, setDecryptedContent] = useState<DecryptedContent>(
     {}
   );
+
+  // Function to decrypt messages
   const decryptMessages = useCallback(
     () =>
       [...messages].reverse().forEach(([, eventGroup]) =>
@@ -167,22 +171,18 @@ const ChatLog: FC<{ recipientPublicKey: string }> = ({
       ),
     [messages, recipientPublicKey]
   );
+
   const listRef = useRef<HTMLOListElement>(null);
   const isUnknownKey = recipientPublicKey === UNKNOWN_PUBLIC_KEY;
   const { picture, userName } = useNostrProfile(
     isUnknownKey ? "" : recipientPublicKey
   );
 
+  // Effect to decrypt messages and scroll to the bottom of the list
   useEffect(() => {
-    if (messages) {
-      console.log("Current messages:", messages);
+    if (messages.length > 0) {
       decryptMessages();
-      console.log("Messages after decryption:", messages);
       listRef.current?.scrollTo(0, listRef.current.scrollHeight);
-      console.log("Current scroll height:", listRef.current?.scrollHeight);
-      console.log("Messages decrypted and displayed."); // Debug log
-    } else {
-      console.log("No messages to decrypt and display.");
     }
   }, [decryptMessages, messages]);
 
@@ -190,12 +190,14 @@ const ChatLog: FC<{ recipientPublicKey: string }> = ({
     <StyledChatLog ref={listRef}>
       {!isUnknownKey && (
         <>
+          {/* Display chat profile */}
           <ChatProfile publicKey={recipientPublicKey} />
+          {/* Render chat messages */}
           {messages.map(([timestamp, eventGroup], groupIndex) =>
             eventGroup.map(
               ({ created_at, id, pubkey, content }, messageIndex) => (
                 <li
-                  key={id} // Ensure a unique key
+                  key={id}
                   className={clsx({
                     "cant-decrypt": decryptedContent[id] === false,
                     received: publicKey !== pubkey,
@@ -204,6 +206,7 @@ const ChatLog: FC<{ recipientPublicKey: string }> = ({
                   data-timestamp={messageIndex === 0 ? timestamp : undefined}
                   title={prettyChatTimestamp(created_at)}
                 >
+                  {/* Display avatar for received messages */}
                   {publicKey !== pubkey && (
                     <div className="avatar">
                       {picture ? (
@@ -213,10 +216,12 @@ const ChatLog: FC<{ recipientPublicKey: string }> = ({
                       )}
                     </div>
                   )}
+                  {/* Display message content */}
                   <SanitizedContent
                     content={decryptedContent[id] || content}
                     decrypted={typeof decryptedContent[id] === "string"}
                   />
+                  {/* Display message status */}
                   {publicKey === pubkey &&
                     groupIndex === messages.length - 1 &&
                     messageIndex === eventGroup.length - 1 && (

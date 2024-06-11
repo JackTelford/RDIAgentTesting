@@ -139,7 +139,6 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
                     type="text"
                     value={message}
                     onChange={(e) => {
-                      console.log("Message input changed", e.target.value);
                       setMessage(e.target.value);
                     }}
                     placeholder="Type your message..."

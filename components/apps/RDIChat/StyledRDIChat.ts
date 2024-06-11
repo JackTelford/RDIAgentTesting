@@ -8,9 +8,9 @@ export const ChatContainer = styled.div`
   flex-direction: column;
   height: 600px;
   padding: 20px;
-  position: absolute; /* Make it absolute for dragging */
+  position: absolute;
   width: 400px;
-  z-index: 1000; /* Ensure it's on top of other elements */
+  z-index: 1000;
 `;
 
 export const ChatHeader = styled.div`

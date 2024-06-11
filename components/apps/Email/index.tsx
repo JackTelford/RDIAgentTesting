@@ -1,15 +1,31 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { ComponentProcessProps } from "components/system/Apps/RenderComponent";
-import { EmailForm, IconContainer, EmailIcon, DropArea } from "./StyledEmail";
+import {
+  EmailContainer,
+  IconContainer,
+  EmailIcon,
+  DropArea,
+  Toolbar,
+  AttachmentList,
+  UserAvatar,
+  ExitButton,
+  EmailHeader,
+  StyledInput,
+  StyledTextarea,
+  SubmitButton,
+  EmailBody,
+} from "./StyledEmail";
+import { userAvatars } from "./UserContext";
 
 const Email: React.FC<ComponentProcessProps> = () => {
   const [email, setEmail] = useState("");
+  const [cc, setCc] = useState("");
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
   const [attachments, setAttachments] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const formRef = useRef<HTMLFormElement>(null);
+  const formRef = useRef<HTMLDivElement>(null);
 
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -18,21 +34,22 @@ const Email: React.FC<ComponentProcessProps> = () => {
     (e: React.FormEvent) => {
       e.preventDefault();
       alert(
-        `Email sent to: ${email}\nSubject: ${subject}\nBody: ${body}\nAttachments: ${attachments.join(", ")}`
+        `Email sent to: ${email}\nCc: ${cc}\nSubject: ${subject}\nBody: ${body}\nAttachments: ${attachments.join(", ")}`
       );
       setEmail("");
+      setCc("");
       setSubject("");
       setBody("");
       setAttachments([]);
     },
-    [email, subject, body, attachments]
+    [email, cc, subject, body, attachments]
   );
 
   useEffect(() => {
     if (isOpen && typeof window !== "undefined" && formRef.current) {
       const form = formRef.current;
-      const initialX = (window.innerWidth - form.offsetWidth) / 2 - 1000;
-      const initialY = (window.innerHeight - form.offsetHeight) / 2 - 500;
+      const initialX = (window.innerWidth - form.offsetWidth) / 2;
+      const initialY = (window.innerHeight - form.offsetHeight) / 2;
       setPosition({ x: initialX, y: initialY });
       form.style.left = `${initialX}px`;
       form.style.top = `${initialY}px`;
@@ -45,11 +62,16 @@ const Email: React.FC<ComponentProcessProps> = () => {
 
   const handleCloseForm = () => {
     setIsOpen(false);
+    setEmail("");
+    setCc("");
+    setSubject("");
+    setBody("");
+    setAttachments([]);
   };
 
-  const handleMouseDown = (
-    e: React.MouseEvent<HTMLFormElement, MouseEvent>
-  ) => {
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (e.target !== e.currentTarget) return; // Only handle dragging if clicking on the header
+
     const form = formRef.current;
     if (form) {
       const rect = form.getBoundingClientRect();
@@ -65,8 +87,8 @@ const Email: React.FC<ComponentProcessProps> = () => {
 
   const handleMouseMove = (e: MouseEvent) => {
     const newPosition = {
-      x: e.clientX - offset.x - 900,
-      y: e.clientY - offset.y - 500,
+      x: e.clientX - offset.x,
+      y: e.clientY - offset.y,
     };
     setPosition(newPosition);
   };
@@ -84,11 +106,6 @@ const Email: React.FC<ComponentProcessProps> = () => {
     }
   }, [position]);
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
@@ -101,7 +118,7 @@ const Email: React.FC<ComponentProcessProps> = () => {
         if (item.kind === "file") {
           const file = item.getAsFile();
           if (file) {
-            droppedFiles.push(file.name);
+            droppedFiles.push(file.name); // Use file.name to get only the file name
             console.log("File dropped:", file.name);
           }
         } else if (item.kind === "string") {
@@ -109,8 +126,9 @@ const Email: React.FC<ComponentProcessProps> = () => {
             if (data.startsWith("[")) {
               console.log("String dropped:", data);
               droppedFiles.push(data);
-              setAttachments((prev) => [...prev, ...droppedFiles]);
-              updateAttachments(droppedFiles);
+              setAttachments((prev) => [
+                ...new Set([...prev, ...droppedFiles]),
+              ]);
             }
           });
         }
@@ -118,17 +136,36 @@ const Email: React.FC<ComponentProcessProps> = () => {
     } else {
       const files = Array.from(e.dataTransfer.files).map((file) => file.name);
       droppedFiles.push(...files);
-      updateAttachments(droppedFiles);
+    }
+
+    if (droppedFiles.length > 0) {
+      setAttachments((prev) => [...new Set([...prev, ...droppedFiles])]);
     }
   };
 
-  const updateAttachments = (droppedFiles: string[]) => {
-    setAttachments((prev) => [...prev, ...droppedFiles]);
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
   };
 
   const handleDragLeave = () => {
     setIsDragging(false);
   };
+
+  // Attach button Logic
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []).map((file) => file.name);
+    setAttachments((prev) => [...new Set([...prev, ...files])]);
+  };
+
+  const handleAttachButtonClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+  // Attach button Logic
 
   return (
     <div>
@@ -137,66 +174,83 @@ const Email: React.FC<ComponentProcessProps> = () => {
         <span>Email</span>
       </IconContainer>
       {isOpen && (
-        <DropArea
-          $isDragging={isDragging}
-          onDragOver={handleDragOver}
-          onDrop={handleDrop}
-          onDragLeave={handleDragLeave}
+        <EmailContainer
+          ref={formRef}
+          style={{
+            left: `${position.x}px`,
+            top: `${position.y}px`,
+          }}
         >
-          <EmailForm
-            ref={formRef}
-            onSubmit={handleSubmit}
-            style={{
-              position: "absolute",
-              cursor: "move",
-              left: `${position.x}px`,
-              top: `${position.y}px`,
-            }}
-            onMouseDown={handleMouseDown}
+          <EmailHeader onMouseDown={handleMouseDown}>
+            <h2>Email</h2>
+            <ExitButton onClick={handleCloseForm}>X</ExitButton>
+          </EmailHeader>
+          <Toolbar className="toolbar">
+            <UserAvatar src={userAvatars["RDI-Applicant"]} alt="User Avatar" />
+            <button
+              type="button"
+              className="toolbar-button"
+              onClick={handleAttachButtonClick}
+            >
+              Attach files
+            </button>
+            <input
+              type="file"
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              onChange={handleFileInputChange}
+              multiple
+            />
+          </Toolbar>
+          <EmailBody
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+            onDragLeave={handleDragLeave}
           >
-            <button className="exit-button" onClick={handleCloseForm}>
-              X
-            </button>
-            <h2>Send Email</h2>
-            <input
-              type="email"
-              placeholder="Email Address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            <input
-              type="text"
-              placeholder="Subject"
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-              required
-            />
-            <textarea
-              placeholder="Body"
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-              rows={10}
-              required
-            />
-            <div>
-              <strong>Attachments:</strong>
-              <ul>
-                {attachments.map((attachment, index) => (
-                  <li key={index}>{attachment}</li>
-                ))}
-              </ul>
-            </div>
-            <button className="submit-button" type="submit">
-              Send
-            </button>
-          </EmailForm>
-        </DropArea>
+            <DropArea $isDragging={isDragging} />
+            <form onSubmit={handleSubmit}>
+              <StyledInput
+                type="email"
+                placeholder="To"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <StyledInput
+                type="text"
+                placeholder="Cc"
+                value={cc}
+                onChange={(e) => setCc(e.target.value)}
+              />
+              <StyledInput
+                type="text"
+                placeholder="Subject"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                required
+              />
+              <StyledTextarea
+                placeholder="Body"
+                value={body}
+                onChange={(e) => setBody(e.target.value)}
+                rows={10}
+                required
+              />
+              <AttachmentList>
+                <strong>Attachments:</strong>
+                <ul>
+                  {attachments.map((attachment, index) => (
+                    <li key={index}>{attachment}</li>
+                  ))}
+                </ul>
+              </AttachmentList>
+              <SubmitButton type="submit">Send</SubmitButton>
+            </form>
+          </EmailBody>
+        </EmailContainer>
       )}
     </div>
   );
 };
 
 export default Email;
-
-// path components/apps/Email/index.ts

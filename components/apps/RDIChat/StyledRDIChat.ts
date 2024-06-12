@@ -33,12 +33,18 @@ export const BackButton = styled.button`
   border-radius: 4px;
   color: white;
   cursor: pointer;
-  margin-right: 10px;
   padding: 5px 10px;
 
   &:hover {
     background-color: #0056b3;
   }
+`;
+
+export const BackButtonContainer = styled.div`
+  display: flex;
+  height: 40px;
+  justify-content: flex-end;
+  padding: 5px;
 `;
 
 export const MessagesContainer = styled.div`
@@ -70,6 +76,7 @@ export const InputContainer = styled.div`
   input {
     border: 1px solid #ccc;
     border-radius: 4px;
+    flex: 1; /* Make the input take up remaining space */
     margin-right: 10px;
     padding: 10px;
   }
@@ -96,8 +103,8 @@ export const ExitButton = styled.button`
   cursor: pointer;
   padding: 5px 10px;
   position: absolute;
-  right: 10px;
-  top: 10px;
+  right: 5px;
+  top: 5px;
 
   &:hover {
     background-color: darkred;
@@ -137,7 +144,7 @@ export const UserItem = styled.div`
   padding: 10px;
 
   &:hover {
-    background-color: #f1f1f1;
+    background-color: #b7b5b5;
   }
 
   img {

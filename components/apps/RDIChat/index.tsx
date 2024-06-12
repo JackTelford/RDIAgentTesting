@@ -12,8 +12,10 @@ import {
   UserListContainer,
   UserItem,
   BackButton,
+  BackButtonContainer,
 } from "./StyledRDIChat";
 import { USERS, useUser, userAvatars } from "./UserContext";
+import { UserAvatar } from "../Email/StyledEmail";
 
 const RDIChat: React.FC<ComponentProcessProps> = () => {
   const [message, setMessage] = useState("");
@@ -116,14 +118,20 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
           }}
         >
           <ChatHeader onMouseDown={handleMouseDown}>
-            {selectedUser && (
+            <UserAvatar src={userAvatars["RDI-Applicant"]} alt="User Avatar" />
+            <h4>Logged in as RDI-Applicant</h4>
+            <h4>
+              {selectedUser ? `Chatting with ${selectedUser}` : "RDIChat"}
+            </h4>
+            <ExitButton onClick={handleCloseForm}>X</ExitButton>
+          </ChatHeader>
+          {selectedUser && (
+            <BackButtonContainer>
               <BackButton onClick={() => setSelectedUser(null)}>
                 Back
               </BackButton>
-            )}
-            <h2>{selectedUser ? `Chat with ${selectedUser}` : "RDIChat"}</h2>
-            <ExitButton onClick={handleCloseForm}>X</ExitButton>
-          </ChatHeader>
+            </BackButtonContainer>
+          )}
           {selectedUser ? (
             <>
               <MessagesContainer>

@@ -2,21 +2,20 @@ import React, { createContext, useContext, useState, ReactNode } from "react";
 
 export const USERS = [
   "RDI-Applicant",
-  "RDIUSER1",
-  "RDIUSER2",
-  "RDIUSER3",
-  "RDIUSER4",
-  "RDIUSER5",
+  "Asako Satoshi",
+  "Lily Wang",
+  "Madison Byers",
+  "Dominic Gonzalez",
+  "Simone Khan",
 ];
 
-// Add this at the top of your RDIChat file or in a separate constants file
 export const userAvatars: { [key in (typeof USERS)[number]]: string } = {
   "RDI-Applicant": "System/Icons/avatars/rdi.png",
-  RDIUSER1: "System/Icons/avatars/agent1.png",
-  RDIUSER2: "System/Icons/avatars/agent2.png",
-  RDIUSER3: "System/Icons/avatars/agent3.png",
-  RDIUSER4: "System/Icons/avatars/agent4.png",
-  RDIUSER5: "System/Icons/avatars/agent5.png",
+  "Asako Satoshi": "System/Icons/avatars/Asako Satoshi.png",
+  "Lily Wang": "System/Icons/avatars/Lily Wang.png",
+  "Madison Byers": "System/Icons/avatars/Madison Byers.png",
+  "Dominic Gonzalez": "System/Icons/avatars/Dominic Gonzalez.png",
+  "Simone Khan": "System/Icons/avatars/Simone Khan.png",
 };
 
 type UserContextType = {

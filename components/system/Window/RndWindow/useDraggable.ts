@@ -1,6 +1,6 @@
 import { useTheme } from "styled-components";
 import { type Position } from "react-rnd";
-import { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import useMinMaxRef from "components/system/Window/RndWindow/useMinMaxRef";
 import { type Size } from "components/system/Window/RndWindow/useResizable";
 import {

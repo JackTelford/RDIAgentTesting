@@ -6,14 +6,14 @@ const directory: Processes = {
   RDIChat: {
     Component: dynamic(() => import("components/apps/RDIChat")),
     backgroundColor: "#f9f9f9",
-    icon: "System/Icons/16x16/chat.png",
+    icon: "/System/Icons/16x16/chat.png",
     title: "RDIChat",
   },
 
   Email: {
     Component: dynamic(() => import("components/apps/Email")),
     backgroundColor: "#808080",
-    icon: "System/Icons/outlookemail.png",
+    icon: "/System/Icons/16x16/outlookemail.png",
     title: "Email",
   },
 

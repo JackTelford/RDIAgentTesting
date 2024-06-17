@@ -9,7 +9,7 @@ export const USERS = [
   "RDIUSER5",
 ];
 
-// Add this at the top of your RDIChat file or in a separate constants file
+// Add this at the top of your RDIChat.url file or in a separate constants file
 export const userAvatars: { [key in (typeof USERS)[number]]: string } = {
   "RDI-Applicant": "System/Icons/avatars/rdi.png",
   RDIUSER1: "System/Icons/avatars/agent1.png",

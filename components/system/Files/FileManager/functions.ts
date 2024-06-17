@@ -261,7 +261,9 @@ export const handleFileInputEvent = (
         const [singleFile] = objectReaders;
 
         if (hasUpdateId) {
-          callback(singleFile.name, undefined, COMPLETE_ACTION.UPDATE_URL);
+          callback(singleFile.name, undefined, COMPLETE_ACTION.UPDATE_URL).then(
+            (r) => r
+          );
         }
         if (hasUpdateId || singleFile.directory === singleFile.name) return;
       }

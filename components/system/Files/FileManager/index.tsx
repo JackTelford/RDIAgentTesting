@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useMemo, useRef, useState } from "react";
+import React, { memo, useEffect, useMemo, useRef, useState, FC } from "react";
 import dynamic from "next/dynamic";
 import FileEntry from "components/system/Files/FileEntry";
 import StyledSelection from "components/system/Files/FileManager/Selection/StyledSelection";
@@ -25,7 +25,6 @@ import {
   SHORTCUT_EXTENSION,
 } from "utils/constants";
 import { getExtension, haltEvent } from "utils/functions";
-import type { FC } from "react";
 import { basename, join } from "path";
 
 const StatusBar = dynamic(
@@ -54,6 +53,23 @@ type FileManagerProps = {
   skipSorting?: boolean;
   url: string;
   view: FileManagerViewNames;
+  customIcons?: Array<{
+    "data-file": string;
+    style: React.CSSProperties;
+    iconProps: {
+      "aria-label": string;
+      title: string;
+      alt: string;
+      src: string;
+      srcSet: string;
+    };
+  }>;
+  onFileOpen?: (file: string) => void;
+  onFileDoubleClick?: (file: string) => void; // Added this line
+};
+
+const defaultFileOpenHandler = (file: string) => {
+  console.log(`Default file open handler: ${file}`);
 };
 
 const FileManager: FC<FileManagerProps> = ({
@@ -72,6 +88,9 @@ const FileManager: FC<FileManagerProps> = ({
   skipSorting,
   url,
   view,
+  customIcons = [],
+  onFileOpen = defaultFileOpenHandler,
+  onFileDoubleClick = defaultFileOpenHandler, // Added this line
 }) => {
   const [currentUrl, setCurrentUrl] = useState(url);
   const [renaming, setRenaming] = useState("");
@@ -86,10 +105,6 @@ const FileManager: FC<FileManagerProps> = ({
   useFolderTracker(currentUrl, { logToConsole: true });
 
   useClipboardEventTracker({ logToConsole: true });
-
-  const handleFileOpen = (file: string) => {
-    console.log("File opened:", file);
-  };
 
   const fileManagerRef = useRef<HTMLOListElement | null>(null);
   const { focusedEntries, focusableEntry, ...focusFunctions } =
@@ -240,6 +255,51 @@ const FileManager: FC<FileManagerProps> = ({
             {...FOCUSABLE_ELEMENT}
           >
             {isSelecting && <StyledSelection style={selectionStyling} />}
+            {customIcons.map((icon, index) => (
+              <li
+                key={index}
+                draggable="true"
+                style={icon.style}
+                data-file={icon["data-file"]}
+                className="sc-iGgVNO iPgsct"
+                onDoubleClick={() => {
+                  console.log(
+                    `Custom icon double-clicked: ${icon["data-file"]}`
+                  );
+                  onFileDoubleClick(icon["data-file"]);
+                }}
+              >
+                <button
+                  aria-label={icon.iconProps["aria-label"]}
+                  type="button"
+                  className="sc-aYaIB hErKd"
+                  title={icon.iconProps["title"]}
+                >
+                  <figure className="sc-dcJtft lflafl">
+                    <picture>
+                      <source
+                        media="(min-resolution: 2.01x), (-webkit-min-device-pixel-ratio: 2.01)"
+                        srcSet={icon.iconProps["srcSet"]}
+                        type="image/webp"
+                      />
+                      <img
+                        alt={icon.iconProps["alt"]}
+                        decoding="async"
+                        draggable="false"
+                        height="48"
+                        loading="eager"
+                        width="48"
+                        className="sc-gEvDqW jWxKGF"
+                        src={icon.iconProps["src"]}
+                      />
+                    </picture>
+                    <figcaption aria-level={1} role="heading">
+                      {icon.iconProps["alt"]}
+                    </figcaption>
+                  </figure>
+                </button>
+              </li>
+            ))}
             {fileKeys.map((file) => (
               <StyledFileEntry
                 key={file}
@@ -271,7 +331,7 @@ const FileManager: FC<FileManagerProps> = ({
                   setRenaming={setRenaming}
                   stats={files[file]}
                   view={view}
-                  handleFileOpen={handleFileOpen}
+                  handleFileOpen={onFileOpen}
                 />
               </StyledFileEntry>
             ))}

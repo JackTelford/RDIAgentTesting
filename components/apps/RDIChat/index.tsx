@@ -1,20 +1,20 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ComponentProcessProps } from "components/system/Apps/RenderComponent";
 import {
-  ChatContainer,
-  ChatHeader,
-  MessagesContainer,
-  Message,
-  InputContainer,
-  ExitButton,
-  IconContainer,
-  ChatIcon,
-  UserListContainer,
-  UserItem,
   BackButton,
   BackButtonContainer,
+  ChatContainer,
+  ChatHeader,
+  ChatIcon,
+  ExitButton,
+  IconContainer,
+  InputContainer,
+  Message,
+  MessagesContainer,
+  UserItem,
+  UserListContainer,
 } from "./StyledRDIChat";
-import { USERS, useUser, userAvatars } from "./UserContext";
+import { userAvatars, USERS, useUser } from "./UserContext";
 import { UserAvatar } from "../Email/StyledEmail";
 
 const RDIChat: React.FC<ComponentProcessProps> = () => {
@@ -23,11 +23,10 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
     []
   );
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
+  const [isPositioned, setIsPositioned] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
-
   const { currentUser } = useUser();
-
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [offset, setOffset] = useState({ x: 0, y: 0 });
 
@@ -55,15 +54,19 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
       setPosition({ x: initialX, y: initialY });
       form.style.left = `${initialX}px`;
       form.style.top = `${initialY}px`;
+      setIsPositioned(true);
     }
   }, [isOpen]);
 
   const handleIconDoubleClick = () => {
-    setIsOpen(true);
+    setIsOpen((prevIsOpen) => {
+      return !prevIsOpen;
+    });
   };
 
   const handleCloseForm = () => {
     setIsOpen(false);
+    setIsPositioned(false);
   };
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -113,6 +116,7 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
         <ChatContainer
           ref={formRef}
           style={{
+            visibility: isPositioned ? "visible" : "hidden",
             left: `${position.x}px`,
             top: `${position.y}px`,
           }}
@@ -182,3 +186,5 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
 };
 
 export default RDIChat;
+
+// path: components/apps/RDIChat/index.tsx

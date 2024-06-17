@@ -23,12 +23,12 @@ const Email: React.FC<ComponentProcessProps> = () => {
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
   const [attachments, setAttachments] = useState<string[]>([]);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
-
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [isPositioned, setIsPositioned] = useState(false);
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
@@ -47,21 +47,26 @@ const Email: React.FC<ComponentProcessProps> = () => {
 
   useEffect(() => {
     if (isOpen && typeof window !== "undefined" && formRef.current) {
+      console.log("Form is open, setting position...");
       const form = formRef.current;
       const initialX = (window.innerWidth - form.offsetWidth) / 2;
       const initialY = (window.innerHeight - form.offsetHeight) / 2;
       setPosition({ x: initialX, y: initialY });
       form.style.left = `${initialX}px`;
       form.style.top = `${initialY}px`;
+      setIsPositioned(true);
     }
   }, [isOpen]);
 
   const handleIconDoubleClick = () => {
+    console.log("Email icon double-clicked, opening form...");
     setIsOpen(true);
   };
 
   const handleCloseForm = () => {
+    console.log("Closing email form...");
     setIsOpen(false);
+    setIsPositioned(false);
     setEmail("");
     setCc("");
     setSubject("");
@@ -101,6 +106,7 @@ const Email: React.FC<ComponentProcessProps> = () => {
   useEffect(() => {
     const form = formRef.current;
     if (form) {
+      console.log("Setting form position...");
       form.style.left = `${position.x}px`;
       form.style.top = `${position.y}px`;
     }
@@ -167,6 +173,8 @@ const Email: React.FC<ComponentProcessProps> = () => {
   };
   // Attach button Logic
 
+  /*  console.log("Rendering Email component with isOpen:", isOpen);*/
+
   return (
     <div>
       <IconContainer onDoubleClick={handleIconDoubleClick}>
@@ -177,6 +185,7 @@ const Email: React.FC<ComponentProcessProps> = () => {
         <EmailContainer
           ref={formRef}
           style={{
+            visibility: isPositioned ? "visible" : "hidden",
             left: `${position.x}px`,
             top: `${position.y}px`,
           }}

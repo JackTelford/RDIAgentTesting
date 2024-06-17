@@ -14,6 +14,13 @@ export const DINO_GAME = {
   url: "chrome://dino",
 };
 
+export const RDIForm = {
+  icon: "/System/Icons/Favicons/16x16/chat.png",
+  name: "RDI Form",
+  path: "/Program Files/Browser/RDIForm/index.html",
+  url: "chrome://rdiform",
+};
+
 export const bookmarks: Bookmark[] = [
   {
     icon: FAVICON_BASE_PATH,
@@ -25,7 +32,10 @@ export const bookmarks: Bookmark[] = [
     name: "Index of /",
     url: "http://localhost/",
   },
+
   DINO_GAME,
+  RDIForm,
+
   {
     icon: "/System/Icons/Favicons/google.webp",
     name: "Google",

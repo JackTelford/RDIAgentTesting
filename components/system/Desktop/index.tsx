@@ -25,6 +25,8 @@ const Desktop: FC<DesktopProps> = ({ children, id }) => {
   useWallpaper(desktopRef);
 
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
+  const lastClickTime = useRef<number>(0);
+  const clickTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const handleFileOpen = (file: string) => {
     setSelectedIcon(file);
@@ -60,6 +62,23 @@ const Desktop: FC<DesktopProps> = ({ children, id }) => {
     }
   };
 
+  const handleIconClick = (file: string) => {
+    const now = Date.now();
+    if (now - lastClickTime.current < 300) {
+      if (clickTimeout.current) {
+        clearTimeout(clickTimeout.current);
+      }
+      handleFileDoubleClick(file);
+    } else {
+      setSelectedIcon(file);
+      clickTimeout.current = setTimeout(() => {
+        handleFileOpen(file);
+        clickTimeout.current = null;
+      }, 300);
+    }
+    lastClickTime.current = now;
+  };
+
   return (
     <StyledDesktop ref={desktopRef}>
       <FileManager
@@ -91,11 +110,11 @@ const Desktop: FC<DesktopProps> = ({ children, id }) => {
           {
             "data-file": "RDIChat.url",
             style: {
-              gridColumnStart: 2,
-              gridRowStart: 3,
+              gridColumnStart: 1,
+              gridRowStart: 4,
               backgroundColor:
                 selectedIcon === "RDIChat.url" ? "lightblue" : "transparent",
-            }, // Adjust as needed
+            },
             iconProps: {
               "aria-label": "RDIChat",
               title: "Opens RDIChat Application",
@@ -106,8 +125,8 @@ const Desktop: FC<DesktopProps> = ({ children, id }) => {
             },
           },
         ]}
-        onFileOpen={handleFileOpen}
-        onFileDoubleClick={handleFileDoubleClick}
+        onFileOpen={handleIconClick}
+        onFileDoubleClick={handleIconClick}
       />
       {openApps.email && <Email id={id} key={`email-${openApps.email}`} />}
 
@@ -123,5 +142,3 @@ const Desktop: FC<DesktopProps> = ({ children, id }) => {
 };
 
 export default Desktop;
-
-// path: components/system/Desktop/index.tsx

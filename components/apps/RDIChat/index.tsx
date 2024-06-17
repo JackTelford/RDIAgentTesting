@@ -108,10 +108,7 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
 
   return (
     <div>
-      <IconContainer onDoubleClick={handleIconDoubleClick}>
-        <ChatIcon src="/System/Icons/16x16/chat.png" alt="RDIChat" />
-        <span>RDIChat</span>
-      </IconContainer>
+      <IconContainer onDoubleClick={handleIconDoubleClick}></IconContainer>
       {isOpen && (
         <ChatContainer
           ref={formRef}

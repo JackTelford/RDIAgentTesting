@@ -90,7 +90,7 @@ const FileManager: FC<FileManagerProps> = ({
   view,
   customIcons = [],
   onFileOpen = defaultFileOpenHandler,
-  onFileDoubleClick = defaultFileOpenHandler, // Added this line
+  onFileDoubleClick = defaultFileOpenHandler,
 }) => {
   const [currentUrl, setCurrentUrl] = useState(url);
   const [renaming, setRenaming] = useState("");
@@ -263,9 +263,6 @@ const FileManager: FC<FileManagerProps> = ({
                 data-file={icon["data-file"]}
                 className="sc-iGgVNO iPgsct"
                 onDoubleClick={() => {
-                  console.log(
-                    `Custom icon double-clicked: ${icon["data-file"]}`
-                  );
                   onFileDoubleClick(icon["data-file"]);
                 }}
               >

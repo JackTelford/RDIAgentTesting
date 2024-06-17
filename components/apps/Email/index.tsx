@@ -47,7 +47,6 @@ const Email: React.FC<ComponentProcessProps> = () => {
 
   useEffect(() => {
     if (isOpen && typeof window !== "undefined" && formRef.current) {
-      console.log("Form is open, setting position...");
       const form = formRef.current;
       const initialX = (window.innerWidth - form.offsetWidth) / 2;
       const initialY = (window.innerHeight - form.offsetHeight) / 2;
@@ -59,12 +58,10 @@ const Email: React.FC<ComponentProcessProps> = () => {
   }, [isOpen]);
 
   const handleIconDoubleClick = () => {
-    console.log("Email icon double-clicked, opening form...");
     setIsOpen(true);
   };
 
   const handleCloseForm = () => {
-    console.log("Closing email form...");
     setIsOpen(false);
     setIsPositioned(false);
     setEmail("");
@@ -106,7 +103,6 @@ const Email: React.FC<ComponentProcessProps> = () => {
   useEffect(() => {
     const form = formRef.current;
     if (form) {
-      console.log("Setting form position...");
       form.style.left = `${position.x}px`;
       form.style.top = `${position.y}px`;
     }
@@ -173,14 +169,9 @@ const Email: React.FC<ComponentProcessProps> = () => {
   };
   // Attach button Logic
 
-  /*  console.log("Rendering Email component with isOpen:", isOpen);*/
-
   return (
     <div>
-      <IconContainer onDoubleClick={handleIconDoubleClick}>
-        <EmailIcon src="/System/Icons/16x16/outlookemail.png" alt="Email" />
-        <span>Email</span>
-      </IconContainer>
+      <IconContainer onDoubleClick={handleIconDoubleClick}></IconContainer>
       {isOpen && (
         <EmailContainer
           ref={formRef}

@@ -227,3 +227,17 @@ yarn serve
 docker build -t daedalos .
 docker run -dp 3000:3000 --rm --name daedalos daedalos
 ```
+
+```
+nvm install 18.20.3
+node -v
+Node.js Must be 18.20.3
+You set the NODE_OPTIONS environment variable to:
+ --openssl-legacy-provider to address the OpenSSL issues.
+ user environment variable
+  C:\Users\YourUserName\AppData\Roaming\nvm\v18.20.3
+  system environment variable
+ C:\Users\YourUserName\AppData\Roaming\nvm\v18.20.3
+ yarn cache clean
+ yarn install
+```

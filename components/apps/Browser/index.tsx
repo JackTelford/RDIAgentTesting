@@ -15,6 +15,7 @@ import {
   LOCAL_HOST,
   NOT_FOUND,
   bookmarks,
+  SalesReport,
 } from "components/apps/Browser/config";
 import { type ComponentProcessProps } from "components/system/Apps/RenderComponent";
 import useTitle from "components/system/Window/useTitle";
@@ -129,7 +130,17 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
             contentWindow
           );
           prependFileToTitle(`${RDIForm.url}/`);
-        } else if (!isHtml) {
+        }
+        // Handle SalesReport URL
+        else if (addressInput.toLowerCase().startsWith(SalesReport.url)) {
+          changeIframeWindowLocation(
+            `${window.location.origin}${SalesReport.path}`,
+            contentWindow
+          );
+          prependFileToTitle(`${SalesReport.url}/`);
+        }
+        // handle SalesReport URL
+        else if (!isHtml) {
           const processedUrl = await getUrlOrSearch(addressInput);
 
           if (
@@ -442,7 +453,7 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
             )}
             {...bookmarkMenu}
           >
-            <Icon alt={name} imgSize={16} src={icon} />
+            <Icon alt={name} imgSize={32} src={icon} />
           </Button>
         ))}
       </nav>

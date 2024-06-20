@@ -1,5 +1,5 @@
 import { useTheme } from "styled-components";
-import { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { type Variant } from "framer-motion";
 import FileManager from "components/system/Files/FileManager";
 import Sidebar from "components/system/StartMenu/Sidebar";

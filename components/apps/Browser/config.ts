@@ -21,27 +21,35 @@ export const RDIForm = {
   url: "chrome://rdiform",
 };
 
+export const SalesReport = {
+  icon: "/System/Icons/Favicons/salesreport.webp",
+  name: "Sales Report",
+  path: "/Program Files/Browser/SalesReport/index.html",
+  url: "chrome://salesreport",
+};
+
 export const bookmarks: Bookmark[] = [
-  {
+  /* {
     icon: FAVICON_BASE_PATH,
     name: "daedalOS",
     url: "https://dustinbrett.com/",
-  },
-  {
+  },*/
+  /*  {
     icon: "/System/Icons/Favicons/dir.webp",
     name: "Index of /",
     url: "http://localhost/",
-  },
+  },*/
 
-  DINO_GAME,
+  /*  DINO_GAME,*/
   RDIForm,
+  SalesReport,
 
   {
     icon: "/System/Icons/Favicons/google.webp",
     name: "Google",
     url: "https://www.google.com/webhp?igu=1",
   },
-  {
+  /*  {
     icon: "/System/Icons/Favicons/wikipedia.webp",
     name: "Wikipedia",
     url: "https://www.wikipedia.org/",
@@ -60,7 +68,7 @@ export const bookmarks: Bookmark[] = [
     icon: "/System/Icons/Favicons/aos.webp",
     name: "AaronOS",
     url: "https://aaronos.dev/",
-  },
+  }*/
 ];
 
 export const HOME_PAGE = "https://www.google.com/webhp?igu=1";

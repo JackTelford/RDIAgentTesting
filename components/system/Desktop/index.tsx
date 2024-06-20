@@ -91,7 +91,7 @@ const Desktop: FC<DesktopProps> = ({ children, id }) => {
         loadIconsImmediately
         customIcons={[
           {
-            "data-file": "Email.url",
+            "data-file": "Email.url", // Updated to handle Email.url file
             style: {
               gridColumnStart: 1,
               gridRowStart: 3,
@@ -101,14 +101,14 @@ const Desktop: FC<DesktopProps> = ({ children, id }) => {
             iconProps: {
               "aria-label": "Email",
               title: "Opens Email Application",
-              alt: "Email",
-              src: "/System/Icons/16x16/outlookemail.png",
+              alt: "Outlook",
+              src: "/System/Icons/16x16/outlookemail.png", // Corrected path
               srcSet:
-                "/System/Icons/48x48/outlookemail.png, /System/Icons/96x96/outlookemail.png 2x, /System/Icons/144x144/outlookemail.png 3x",
+                "/System/Icons/32x32/outlookemail.png 1x, /System/Icons/48x48/outlookemail.png 2x, /System/Icons/96x96/outlookemail.png 3x, /System/Icons/144x144/outlookemail.png 4x", // Corrected paths
             },
           },
           {
-            "data-file": "RDIChat.url",
+            "data-file": "RDIChat.url", // Updated to handle RDIChat.url file
             style: {
               gridColumnStart: 1,
               gridRowStart: 4,
@@ -119,9 +119,9 @@ const Desktop: FC<DesktopProps> = ({ children, id }) => {
               "aria-label": "RDIChat",
               title: "Opens RDIChat Application",
               alt: "RDIChat",
-              src: "/System/Icons/16x16/chat.png",
+              src: "/System/Icons/16x16/chat.png", // Corrected path
               srcSet:
-                "/System/Icons/48x48/chat.png, /System/Icons/96x96/chat.png 2x, /System/Icons/144x144/chat.png 3x",
+                "/System/Icons/32x32/chat.png 1x, /System/Icons/48x48/chat.png 2x, /System/Icons/96x96/chat.png 3x, /System/Icons/144x144/chat.png 4x", // Corrected paths
             },
           },
         ]}

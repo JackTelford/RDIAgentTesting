@@ -15,7 +15,7 @@ export const DINO_GAME = {
 };
 
 export const RDIForm = {
-  icon: "/System/Icons/Favicons/16x16/chat.png",
+  icon: "/System/Icons/Favicons/rdi-social.webp",
   name: "RDI Form",
   path: "/Program Files/Browser/RDIForm/index.html",
   url: "chrome://rdiform",

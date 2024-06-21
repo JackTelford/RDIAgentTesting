@@ -124,6 +124,40 @@ const StyledBrowser = styled.div<StyledBrowserProps>`
         padding-bottom: 7px; /* Adjust for border-bottom removal */
       }
     }
+
+    .close-tab {
+      background-color: transparent;
+      border: none;
+      color: red;
+      cursor: pointer;
+      margin-left: auto;
+      padding: 0 6px;
+      width: fit-content;
+
+      &:hover {
+        color: darkred;
+      }
+    }
+
+    #add-tab {
+      background-color: rgb(87, 87, 87);
+      border: 1px solid rgb(100, 100, 100);
+      border-radius: 4px;
+      color: white;
+      font-size: 16px;
+      margin-left: 4px;
+      padding: 6px 12px;
+      transition: background 0.2s ease-in-out;
+      width: fit-content;
+
+      &:hover {
+        background-color: rgb(140, 140, 140);
+      }
+
+      &:active {
+        background-color: rgb(160, 160, 160);
+      }
+    }
   }
 `;
 

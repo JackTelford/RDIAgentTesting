@@ -414,15 +414,18 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
 
   // Function to add a new tab
   const addTab = () => {
-    const newTabId = tabs.length;
+    const newTabId = new Date().getTime();
     setTabs([...tabs, { id: newTabId, url: HOME_PAGE }]);
     setActiveTab(newTabId);
   };
 
   // Function to switch to a different tab
   const switchTab = (tabId: number) => {
-    setActiveTab(tabId);
-    setUrl(tabs[tabId].url);
+    const tab = tabs.find((tab) => tab.id === tabId); // added this to check to ensure the tab exists
+    if (tab) {
+      setActiveTab(tabId);
+      setUrl(tab.url);
+    }
   };
 
   // Update the URL for the current tab
@@ -441,26 +444,50 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
 
   // adding the Tab Functionality
 
+  // Function to close a tab
+  const closeTab = (tabId: number) => {
+    const newTabs = tabs.filter((tab) => tab.id !== tabId);
+    setTabs(newTabs);
+
+    if (activeTab === tabId && newTabs.length > 0) {
+      // If the closed tab was the active tab, set the new active tab
+      const newActiveTab = newTabs.length === 1 ? newTabs[0].id : newTabs[0].id;
+      setActiveTab(newActiveTab);
+      setUrl(newTabs[0].url); // We added this to ensure the URL is set to the first remaining tab
+    } else if (newTabs.length === 0) {
+      // If no tabs remain, reset to initial state
+      setActiveTab(0);
+      setUrl(HOME_PAGE);
+    }
+  };
+
   return (
     <StyledBrowser $hasSrcDoc={Boolean(srcDoc)}>
       {/* Add the tabs to the browser */}
       <div id="tabs-nav">
         {tabs.map((tab) => (
-          <Button
-            key={tab.id}
-            onClick={() => switchTab(tab.id)}
-            {...label(`Switch to tab ${tab.url}`)}
-          >
-            {tab.url}
-          </Button>
+          <div key={tab.id} className="tab">
+            <Button
+              id={`close-tab-${tab.id}`}
+              className="close-tab"
+              onClick={() => closeTab(tab.id)}
+              {...label(`Close tab ${tab.url}`)}
+            >
+              X
+            </Button>
+
+            <Button
+              id={`tab-${tab.id}`}
+              key={tab.id}
+              onClick={() => switchTab(tab.id)}
+              {...label(`Switch to tab ${tab.url}`)}
+            >
+              {tab.url}
+            </Button>
+          </div>
         ))}
-        <Button
-          key={tabs[0].id}
-          onClick={() => {
-            addTab();
-          }}
-          {...label(`Add new tab`)}
-        >
+
+        <Button id="add-tab" onClick={addTab} {...label(`Add new tab`)}>
           +
         </Button>
       </div>

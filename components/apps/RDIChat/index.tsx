@@ -5,7 +5,6 @@ import {
   BackButtonContainer,
   ChatContainer,
   ChatHeader,
-  ChatIcon,
   ExitButton,
   IconContainer,
   InputContainer,
@@ -29,6 +28,8 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
   const { currentUser } = useUser();
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [offset, setOffset] = useState({ x: 0, y: 0 });
+
+  const [showNotification, setShowNotification] = useState(true);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,8 +56,25 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
       form.style.left = `${initialX}px`;
       form.style.top = `${initialY}px`;
       setIsPositioned(true);
+
+      // Check if the message already exists
+      const messageExists = messages.some(
+        (msg) =>
+          msg.user === "Asako Satoshi" &&
+          msg.text === "please send me the sales report"
+      );
+
+      if (!messageExists) {
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          {
+            user: "Asako Satoshi",
+            text: "please send me the sales report",
+          },
+        ]);
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, messages]);
 
   const handleIconDoubleClick = () => {
     setIsOpen((prevIsOpen) => {
@@ -106,6 +124,11 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
     }
   }, [position]);
 
+  const handleBackClick = () => {
+    setShowNotification(false); // Hide the notification
+    setSelectedUser(null); // Go back to user list
+  };
+
   return (
     <div>
       <IconContainer onDoubleClick={handleIconDoubleClick}></IconContainer>
@@ -128,9 +151,7 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
           </ChatHeader>
           {selectedUser && (
             <BackButtonContainer>
-              <BackButton onClick={() => setSelectedUser(null)}>
-                Back
-              </BackButton>
+              <BackButton onClick={handleBackClick}>Back</BackButton>
             </BackButtonContainer>
           )}
           {selectedUser ? (
@@ -138,6 +159,10 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
               <MessagesContainer>
                 {messages
                   .filter((msg) => msg.user === selectedUser)
+                  .filter(
+                    (msg, index, self) =>
+                      self.findIndex((m) => m.text === msg.text) === index
+                  ) // Ensure unique messages
                   .map((msg, index) => (
                     <Message key={index}>{msg.text}</Message>
                   ))}
@@ -171,6 +196,11 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
                       {messages.find((msg) => msg.user === user)?.text ||
                         "No messages yet"}
                     </small>
+                    {user === "Asako Satoshi" && showNotification && (
+                      <div className="notification">
+                        please send me the sales report
+                      </div>
+                    )}
                   </div>
                 </UserItem>
               ))}

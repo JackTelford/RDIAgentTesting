@@ -123,15 +123,6 @@ export const IconContainer = styled.div`
   }
 `;
 
-export const ChatIcon = styled.img`
-  height: 40px;
-  width: 40px;
-
-  &:hover {
-    opacity: 70%;
-  }
-`;
-
 export const UserListContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -164,6 +155,15 @@ export const UserItem = styled.div`
 
     small {
       color: #888;
+    }
+
+    .notification {
+      background-color: red;
+      border-radius: 50%;
+      color: white;
+      font-size: 12px;
+      margin-top: 5px;
+      padding: 5px 10px;
     }
   }
 `;

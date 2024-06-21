@@ -81,8 +81,7 @@ const StyledBrowser = styled.div<StyledBrowserProps>`
       height: 34px;
       letter-spacing: 0.2px;
       margin: 0 6px;
-      padding: 0 13px;
-      padding-bottom: 2px;
+      padding: 0 13px 2px;
       width: 100%;
 
       &:focus {
@@ -91,6 +90,38 @@ const StyledBrowser = styled.div<StyledBrowserProps>`
 
       &::selection {
         background-color: rgb(0, 74, 119);
+      }
+    }
+  }
+
+  #tabs-nav {
+    background-color: rgb(87, 87, 87);
+    border-bottom: 1px solid rgb(118, 115, 118);
+    display: flex;
+    padding: 4px;
+
+    button {
+      background-color: rgb(120, 120, 120);
+      border: 1px solid rgb(100, 100, 100);
+      border-radius: 4px 4px 0 0;
+      color: white;
+      margin-right: 2px;
+      padding: 6px 12px;
+      transition: background 0.2s ease-in-out;
+
+      &:hover {
+        background-color: rgb(140, 140, 140);
+      }
+
+      &:active {
+        background-color: rgb(160, 160, 160);
+      }
+
+      &[data-active="true"] {
+        background-color: white;
+        border-bottom: none;
+        color: black;
+        padding-bottom: 7px; /* Adjust for border-bottom removal */
       }
     }
   }

@@ -87,16 +87,34 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
       contentWindow.location?.replace(newUrl);
     }
   };
+
+  /*  const goToLink = useCallback(
+      (newUrl: string): void => {
+        if (inputRef.current) {
+          inputRef.current.value = newUrl;
+        }
+
+        changeUrl(id, newUrl);
+      },
+      [changeUrl, id]
+    );*/
+
+  // this is updated to add TABS
+  // Update the goToLink function to handle tab URL update
+  const [activeTab, setActiveTab] = useState(0);
+  // Update the goToLink function to handle tab URL update
   const goToLink = useCallback(
     (newUrl: string): void => {
       if (inputRef.current) {
         inputRef.current.value = newUrl;
       }
-
       changeUrl(id, newUrl);
+      updateTabUrl(activeTab, newUrl);
     },
-    [changeUrl, id]
+    [changeUrl, id, activeTab]
   );
+  // Update the goToLink function to handle tab URL update
+
   const { backMenu, forwardMenu } = useHistoryMenu(
     history,
     position,
@@ -389,8 +407,64 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
     }
   }, [id, linkElement]);
 
+  // adding the Tab Functionality
+  // Add state for tabs
+  const [tabs, setTabs] = useState([{ id: 0, url: initialUrl }]);
+  /*  const [activeTab, setActiveTab] = useState(0);*/
+
+  // Function to add a new tab
+  const addTab = () => {
+    const newTabId = tabs.length;
+    setTabs([...tabs, { id: newTabId, url: HOME_PAGE }]);
+    setActiveTab(newTabId);
+  };
+
+  // Function to switch to a different tab
+  const switchTab = (tabId: number) => {
+    setActiveTab(tabId);
+    setUrl(tabs[tabId].url);
+  };
+
+  // Update the URL for the current tab
+  const updateTabUrl = (tabId: number, url: string) => {
+    setTabs(tabs.map((tab) => (tab.id === tabId ? { ...tab, url } : tab)));
+  };
+
+  // Update useEffect to set the URL for the active tab
+  useEffect(() => {
+    if (process && history[position] !== currentUrl.current) {
+      currentUrl.current = history[position];
+      setUrl(history[position]).then((r) => r);
+      updateTabUrl(activeTab, history[position]);
+    }
+  }, [history, position, process, setUrl, activeTab]);
+
+  // adding the Tab Functionality
+
   return (
     <StyledBrowser $hasSrcDoc={Boolean(srcDoc)}>
+      {/* Add the tabs to the browser */}
+      <div id="tabs-nav">
+        {tabs.map((tab) => (
+          <Button
+            key={tab.id}
+            onClick={() => switchTab(tab.id)}
+            {...label(`Switch to tab ${tab.url}`)}
+          >
+            {tab.url}
+          </Button>
+        ))}
+        <Button
+          key={tabs[0].id}
+          onClick={() => {
+            addTab();
+          }}
+          {...label(`Add new tab`)}
+        >
+          +
+        </Button>
+      </div>
+
       <nav>
         <div>
           <Button

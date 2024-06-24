@@ -82,11 +82,9 @@
     event.preventDefault();
     const yearInput = document.getElementById('date').value;
     const errorMessage = document.getElementById('error-message');
-
     if (yearInput === '1896') {
-      alert('Form submitted');
       errorMessage.textContent = 'Form submitted successfully! Move to the next step.';
-      document.getElementById('myForm').reset(); // Clear the form
+      document.getElementById('myForm').reset();
     } else {
       errorMessage.textContent = 'Wrong year, try again';
     }

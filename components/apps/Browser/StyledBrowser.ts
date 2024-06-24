@@ -22,7 +22,6 @@ const StyledBrowser = styled.div<StyledBrowserProps>`
     div {
       display: flex;
       justify-content: space-around;
-      margin-right: 2px;
       min-width: 102px;
       padding-left: 4px;
       width: 142px;
@@ -44,7 +43,8 @@ const StyledBrowser = styled.div<StyledBrowserProps>`
       }
 
       &:hover {
-        background-color: rgb(103, 103, 103);
+        background-color: rgb(241, 241, 241);
+        width: 50px;
       }
 
       &:active {
@@ -65,11 +65,6 @@ const StyledBrowser = styled.div<StyledBrowserProps>`
       height: 37px;
       justify-content: left;
       padding: 0 8px;
-
-      button {
-        margin-bottom: 4px;
-        margin-right: 20px;
-      }
     }
 
     input {

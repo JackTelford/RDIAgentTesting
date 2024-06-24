@@ -21,7 +21,6 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
   const [messages, setMessages] = useState<{ user: string; text: string }[]>(
     []
   );
-
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(true);
   const [isPositioned, setIsPositioned] = useState(false);
@@ -38,8 +37,8 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedUser) return;
-    console.log(`Selected User: ${selectedUser}`);
-    console.log(`Message: ${message}`);
+    console.log(`Selected User ${selectedUser}`);
+    console.log(`Message ${message}`);
     setMessages((prevMessages) => [
       ...prevMessages,
       {

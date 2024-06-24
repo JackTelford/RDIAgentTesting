@@ -510,6 +510,7 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
             <Button
               className="bookmark-button"
               onClick={({ ctrlKey }) => {
+                console.log(`bookmark ${name}`);
                 if (ctrlKey) {
                   open("Browser", { url: bookmarkUrl });
                 } else {

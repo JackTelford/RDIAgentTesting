@@ -9,7 +9,7 @@ export const logEvent = (
   options?: EventOptions
 ): void => {
   if (options?.logToConsole && eventDescription) {
-    console.log(eventDescription); // Ensure to remove this after testing
+    console.log(eventDescription);
   }
 };
 
@@ -28,7 +28,7 @@ export const useFolderTracker = (
         (folderName !== prevFolderName.current || folderName === "/")
       ) {
         if (!accessedFolders.current.has(folderName)) {
-          logEvent(`Folder opened: ${folderName}`, options);
+          logEvent(`Folder opened ${folderName}`, options);
           accessedFolders.current.add(folderName);
         }
         prevFolderName.current = folderName;
@@ -48,10 +48,10 @@ export const useMouseClickTracker = (options?: EventOptions): void => {
       const targetElement =
         target instanceof HTMLElement ? target.tagName : "Unknown";
 
-      logEvent(
+      /*    logEvent(
         `Mouse clicked at (${clientX}, ${clientY}), Button: ${button}, Click Count: ${detail}, Target Element: ${targetElement}`,
         options
-      );
+      );*/
     };
   }
 
@@ -105,13 +105,11 @@ export const useClipboardEventTracker = (options?: EventOptions): void => {
       });
     };
 
-    // Add event listener for right click
     const handleRightClick = (event: MouseEvent) => {
       event.preventDefault();
       logEvent("Right click", options);
     };
 
-    // Add event listeners for drag events
     const handleDragStart = (_event: DragEvent) => {
       logEvent("File drag started", options);
     };
@@ -119,10 +117,6 @@ export const useClipboardEventTracker = (options?: EventOptions): void => {
     const handleDragOver = (_event: DragEvent) => {
       logEvent("File dragged over", options);
     };
-
-    /*  const handleDrop = (_event: DragEvent) => {
-      logEvent("File dropped", options);
-    };*/
 
     document.addEventListener("cut", handleCut);
     document.addEventListener("copy", handleCopy);
@@ -132,7 +126,6 @@ export const useClipboardEventTracker = (options?: EventOptions): void => {
     document.addEventListener("contextmenu", handleRightClick);
     document.addEventListener("dragstart", handleDragStart);
     document.addEventListener("dragover", handleDragOver);
-    /*    document.addEventListener("drop", handleDrop);*/
 
     return () => {
       document.removeEventListener("cut", handleCut);
@@ -143,7 +136,6 @@ export const useClipboardEventTracker = (options?: EventOptions): void => {
       document.removeEventListener("contextmenu", handleRightClick);
       document.removeEventListener("dragstart", handleDragStart);
       document.removeEventListener("dragover", handleDragOver);
-      /*      document.removeEventListener("drop", handleDrop);*/
     };
   }, [options]);
 };

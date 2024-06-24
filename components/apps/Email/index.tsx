@@ -3,7 +3,6 @@ import { ComponentProcessProps } from "components/system/Apps/RenderComponent";
 import {
   EmailContainer,
   IconContainer,
-  EmailIcon,
   DropArea,
   Toolbar,
   AttachmentList,
@@ -30,17 +29,30 @@ const Email: React.FC<ComponentProcessProps> = () => {
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [isPositioned, setIsPositioned] = useState(false);
 
+  const [emailSent, setEmailSent] = useState(false);
+
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-      alert(
-        `Email sent to: ${email}\nCc: ${cc}\nSubject: ${subject}\nBody: ${body}\nAttachments: ${attachments.join(", ")}`
-      );
+      const emailDetails = {
+        to: email,
+        cc: cc,
+        subject: subject,
+        body: body,
+        attachments: attachments,
+      };
+      console.log("Email sent", emailDetails);
+
       setEmail("");
       setCc("");
       setSubject("");
       setBody("");
       setAttachments([]);
+
+      setEmailSent(true);
+      setTimeout(() => {
+        setEmailSent(false);
+      }, 2000);
     },
     [email, cc, subject, body, attachments]
   );
@@ -245,6 +257,7 @@ const Email: React.FC<ComponentProcessProps> = () => {
                 </ul>
               </AttachmentList>
               <SubmitButton type="submit">Send</SubmitButton>
+              {emailSent && <p style={{ color: "red" }}>Email Sent</p>}
             </form>
           </EmailBody>
         </EmailContainer>

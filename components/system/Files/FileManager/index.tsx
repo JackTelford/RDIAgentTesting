@@ -69,7 +69,7 @@ type FileManagerProps = {
 };
 
 const defaultFileOpenHandler = (file: string) => {
-  console.log(`Default file open handler: ${file}`);
+  console.log(`file opened ${file}`);
 };
 
 const FileManager: FC<FileManagerProps> = ({

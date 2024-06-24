@@ -145,25 +145,39 @@ export const UserItem = styled.div`
     width: 40px;
   }
 
-  div {
+  .notification-container {
+    align-items: center;
+    display: flex;
+    margin-top: 5px; /* Add some space between the message text and the notification */
+  }
+
+  .user-details {
     display: flex;
     flex-direction: column;
+  }
 
-    span {
-      font-weight: bold;
-    }
+  .user-name {
+    align-items: center;
+    display: flex;
+  }
 
-    small {
-      color: #888;
-    }
+  .notification-dot {
+    align-items: center;
+    background-color: red;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    font-size: 12px;
+    height: 20px;
+    justify-content: center;
+    margin-left: 5px;
+    width: 20px;
+  }
 
-    .notification {
-      background-color: red;
-      border-radius: 50%;
-      color: white;
-      font-size: 12px;
-      margin-top: 5px;
-      padding: 5px 10px;
-    }
+  small {
+    color: #888;
+    display: flex;
+    flex-direction: column; /* Stack messages vertically */
+    margin-top: 5px; /* Add space between the user name and the message text */
   }
 `;

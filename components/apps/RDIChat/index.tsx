@@ -21,6 +21,7 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
   const [messages, setMessages] = useState<{ user: string; text: string }[]>(
     []
   );
+
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(true);
   const [isPositioned, setIsPositioned] = useState(false);
@@ -30,11 +31,13 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
   const [offset, setOffset] = useState({ x: 0, y: 0 });
 
   const [showNotification, setShowNotification] = useState(true);
+  const [notifications, setNotifications] = useState<{
+    [user: string]: boolean;
+  }>({});
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedUser) return;
-    console.log(`Current User: ${currentUser}`);
     console.log(`Selected User: ${selectedUser}`);
     console.log(`Message: ${message}`);
     setMessages((prevMessages) => [
@@ -45,36 +48,11 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
       },
     ]);
     setMessage("");
+    setNotifications((prevNotifications) => ({
+      ...prevNotifications,
+      [selectedUser]: true,
+    }));
   };
-
-  useEffect(() => {
-    if (isOpen && typeof window !== "undefined" && formRef.current) {
-      const form = formRef.current;
-      const initialX = (window.innerWidth - form.offsetWidth) / 2;
-      const initialY = (window.innerHeight - form.offsetHeight) / 2;
-      setPosition({ x: initialX, y: initialY });
-      form.style.left = `${initialX}px`;
-      form.style.top = `${initialY}px`;
-      setIsPositioned(true);
-
-      // Check if the message already exists
-      const messageExists = messages.some(
-        (msg) =>
-          msg.user === "Asako Satoshi" &&
-          msg.text === "please send me the sales report"
-      );
-
-      if (!messageExists) {
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          {
-            user: "Asako Satoshi",
-            text: "please send me the sales report",
-          },
-        ]);
-      }
-    }
-  }, [isOpen, messages]);
 
   const handleIconDoubleClick = () => {
     setIsOpen((prevIsOpen) => {
@@ -116,6 +94,25 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
     document.removeEventListener("mouseup", handleMouseUp);
   };
 
+  const handleBackClick = () => {
+    if (selectedUser) {
+      setNotifications((prevNotifications) => ({
+        ...prevNotifications,
+        [selectedUser]: false,
+      }));
+    }
+    setShowNotification(false);
+    setSelectedUser(null);
+  };
+
+  const getLastMessageForUser = (user: string) => {
+    return messages
+      .slice()
+      .reverse()
+      .find((msg) => msg.user === user);
+  };
+
+  // click and drag function
   useEffect(() => {
     const form = formRef.current;
     if (form) {
@@ -124,10 +121,55 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
     }
   }, [position]);
 
-  const handleBackClick = () => {
-    setShowNotification(false); // Hide the notification
-    setSelectedUser(null); // Go back to user list
-  };
+  // center the form when it is first opened
+  useEffect(() => {
+    if (isOpen && typeof window !== "undefined" && formRef.current) {
+      const form = formRef.current;
+      const initialX = (window.innerWidth - form.offsetWidth) / 2;
+      const initialY = (window.innerHeight - form.offsetHeight) / 2;
+      setPosition({ x: initialX, y: initialY });
+      form.style.left = `${initialX}px`;
+      form.style.top = `${initialY}px`;
+      setIsPositioned(true);
+    }
+  }, [isOpen]);
+
+  // simulate incoming messages
+  useEffect(() => {
+    if (isOpen) {
+      const timeoutId1 = setTimeout(() => {
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { user: "Asako Satoshi", text: "Please send me the SalesReport URL" },
+        ]);
+        setNotifications((prevNotifications) => ({
+          ...prevNotifications,
+          "Asako Satoshi": true,
+        }));
+      }, 1000);
+
+      const timeoutId2 = setTimeout(() => {
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          {
+            user: "Dominic Gonzalez",
+            text: "Please send me the RDI sales summary",
+          },
+        ]);
+        setNotifications((prevNotifications) => ({
+          ...prevNotifications,
+          "Dominic Gonzalez": true,
+        }));
+      }, 3000);
+
+      return () => {
+        clearTimeout(timeoutId1);
+        clearTimeout(timeoutId2);
+      };
+    } else {
+      return undefined;
+    }
+  }, [isOpen]);
 
   return (
     <div>
@@ -159,10 +201,6 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
               <MessagesContainer>
                 {messages
                   .filter((msg) => msg.user === selectedUser)
-                  .filter(
-                    (msg, index, self) =>
-                      self.findIndex((m) => m.text === msg.text) === index
-                  ) // Ensure unique messages
                   .map((msg, index) => (
                     <Message key={index}>{msg.text}</Message>
                   ))}
@@ -172,9 +210,7 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
                   <input
                     type="text"
                     value={message}
-                    onChange={(e) => {
-                      setMessage(e.target.value);
-                    }}
+                    onChange={(e) => setMessage(e.target.value)}
                     placeholder="Type your message..."
                     required
                   />
@@ -185,22 +221,30 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
           ) : (
             <UserListContainer>
               {USERS.filter((user) => user !== currentUser).map((user) => (
-                <UserItem key={user} onClick={() => setSelectedUser(user)}>
+                <UserItem
+                  key={user}
+                  onClick={() => {
+                    setSelectedUser(user);
+                    setNotifications((prevNotifications) => ({
+                      ...prevNotifications,
+                      [user]: false,
+                    }));
+                  }}
+                >
                   <img
                     src={userAvatars[user as keyof typeof userAvatars]}
                     alt={`${user}'s avatar`}
                   />
-                  <div>
-                    <span>{user}</span>
+                  <div className="user-details">
+                    <span className="user-name">
+                      {user}
+                      {notifications[user] && (
+                        <div className="notification-dot">!</div>
+                      )}
+                    </span>
                     <small>
-                      {messages.find((msg) => msg.user === user)?.text ||
-                        "No messages yet"}
+                      {getLastMessageForUser(user)?.text || "No messages yet"}
                     </small>
-                    {user === "Asako Satoshi" && showNotification && (
-                      <div className="notification">
-                        please send me the sales report
-                      </div>
-                    )}
                   </div>
                 </UserItem>
               ))}

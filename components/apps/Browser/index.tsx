@@ -88,21 +88,7 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
     }
   };
 
-  /*  const goToLink = useCallback(
-      (newUrl: string): void => {
-        if (inputRef.current) {
-          inputRef.current.value = newUrl;
-        }
-
-        changeUrl(id, newUrl);
-      },
-      [changeUrl, id]
-    );*/
-
-  // this is updated to add TABS
-  // Update the goToLink function to handle tab URL update
   const [activeTab, setActiveTab] = useState(0);
-  // Update the goToLink function to handle tab URL update
   const goToLink = useCallback(
     (newUrl: string): void => {
       if (inputRef.current) {
@@ -113,13 +99,13 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
     },
     [changeUrl, id, activeTab]
   );
-  // Update the goToLink function to handle tab URL update
 
   const { backMenu, forwardMenu } = useHistoryMenu(
     history,
     position,
     moveHistory
   );
+
   const bookmarkMenu = useBookmarkMenu();
   const setUrl = useCallback(
     async (addressInput: string): Promise<void> => {
@@ -133,6 +119,7 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
         setLoading(true);
         if (isHtml) setSrcDoc((await readFile(addressInput)).toString());
         setIcon(id, processDirectory.Browser.icon);
+
         // Handle DINOGAME URL
         if (addressInput.toLowerCase().startsWith(DINO_GAME.url)) {
           changeIframeWindowLocation(
@@ -141,6 +128,7 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
           );
           prependFileToTitle(`${DINO_GAME.url}/`);
         }
+
         // Handle RDIForm URL
         else if (addressInput.toLowerCase().startsWith(RDIForm.url)) {
           changeIframeWindowLocation(
@@ -149,6 +137,7 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
           );
           prependFileToTitle(`${RDIForm.url}/`);
         }
+
         // Handle SalesReport URL
         else if (addressInput.toLowerCase().startsWith(SalesReport.url)) {
           changeIframeWindowLocation(
@@ -156,11 +145,8 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
             contentWindow
           );
           prependFileToTitle(`${SalesReport.url}/`);
-        }
-        // handle SalesReport URL
-        else if (!isHtml) {
+        } else if (!isHtml) {
           const processedUrl = await getUrlOrSearch(addressInput);
-
           if (
             LOCAL_HOST.has(processedUrl.host) ||
             LOCAL_HOST.has(addressInput)
@@ -174,10 +160,8 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
             );
             const { O: order, C: column } = searchParams;
             const isAscending = !order || order === "A";
-
             let newSrcDoc = NOT_FOUND;
             let newTitle = "404 Not Found";
-
             if (
               (await exists(directory)) &&
               (await stat(directory)).isDirectory()
@@ -188,7 +172,6 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
                     const href = join(directory, entry);
                     let description;
                     let shortcutUrl;
-
                     if (getExtension(entry) === SHORTCUT_EXTENSION) {
                       try {
                         ({ comment: description, url: shortcutUrl } =
@@ -334,9 +317,7 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
             prependFileToTitle(newTitle);
           } else {
             const addressUrl = processedUrl.href;
-
             changeIframeWindowLocation(addressUrl, contentWindow);
-
             if (addressUrl.startsWith(GOOGLE_SEARCH_QUERY)) {
               prependFileToTitle(`${addressInput} - Google Search`);
             } else {
@@ -344,7 +325,6 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
                 bookmarks?.find(
                   ({ url: bookmarkUrl }) => bookmarkUrl === addressInput
                 ) || {};
-
               prependFileToTitle(name);
             }
 
@@ -407,11 +387,7 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
     }
   }, [id, linkElement]);
 
-  // adding the Tab Functionality
-  // Add state for tabs
   const [tabs, setTabs] = useState([{ id: 0, url: initialUrl }]);
-  /*  const [activeTab, setActiveTab] = useState(0);*/
-
   // Function to add a new tab
   const addTab = () => {
     const newTabId = new Date().getTime();
@@ -442,20 +418,15 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
     }
   }, [history, position, process, setUrl, activeTab]);
 
-  // adding the Tab Functionality
-
   // Function to close a tab
   const closeTab = (tabId: number) => {
     const newTabs = tabs.filter((tab) => tab.id !== tabId);
     setTabs(newTabs);
-
     if (activeTab === tabId && newTabs.length > 0) {
-      // If the closed tab was the active tab, set the new active tab
       const newActiveTab = newTabs.length === 1 ? newTabs[0].id : newTabs[0].id;
       setActiveTab(newActiveTab);
-      setUrl(newTabs[0].url); // We added this to ensure the URL is set to the first remaining tab
+      setUrl(newTabs[0].url);
     } else if (newTabs.length === 0) {
-      // If no tabs remain, reset to initial state
       setActiveTab(0);
       setUrl(HOME_PAGE);
     }
@@ -463,7 +434,6 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
 
   return (
     <StyledBrowser $hasSrcDoc={Boolean(srcDoc)}>
-      {/* Add the tabs to the browser */}
       <div id="tabs-nav">
         {tabs.map((tab) => (
           <div key={tab.id} className="tab">
@@ -486,12 +456,10 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
             </Button>
           </div>
         ))}
-
         <Button id="add-tab" onClick={addTab} {...label(`Add new tab`)}>
           +
         </Button>
       </div>
-
       <nav>
         <div>
           <Button
@@ -538,24 +506,25 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
       </nav>
       <nav>
         {bookmarks.map(({ name, icon, url: bookmarkUrl }) => (
-          <Button
-            key={name}
-            onClick={({ ctrlKey }) => {
-              if (ctrlKey) {
-                open("Browser", { url: bookmarkUrl });
-              } else {
-                goToLink(bookmarkUrl);
-              }
-            }}
-            {...label(
-              `${name}\n${bookmarkUrl
-                .replace(/^http:\/\//, "")
-                .replace(/\/$/, "")}`
-            )}
-            {...bookmarkMenu}
-          >
-            <Icon alt={name} imgSize={32} src={icon} />
-          </Button>
+          <div key={name} className="bookmark-container">
+            <Button
+              className="bookmark-button"
+              onClick={({ ctrlKey }) => {
+                if (ctrlKey) {
+                  open("Browser", { url: bookmarkUrl });
+                } else {
+                  goToLink(bookmarkUrl);
+                }
+              }}
+              {...label(
+                `${name}\n${bookmarkUrl.replace(/^http:\/\//, "").replace(/\/$/, "")}`
+              )}
+              {...bookmarkMenu}
+            >
+              <Icon alt={name} imgSize={32} src={icon} />
+            </Button>
+            <span className="bookmark-name">{name}</span>
+          </div>
         ))}
       </nav>
       <iframe

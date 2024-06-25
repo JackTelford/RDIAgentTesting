@@ -16,7 +16,7 @@ const Index = (): React.ReactElement => {
   useGlobalErrorHandler();
 
   // Generate a unique id for the Desktop component
-  const desktopId = "desktop-1"; // or any unique id generation logic
+  const desktopId = "desktop-1";
 
   return (
     <Desktop id={desktopId}>

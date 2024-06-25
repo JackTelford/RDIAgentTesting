@@ -5,6 +5,7 @@ import FileManager from "components/system/Files/FileManager";
 import { DESKTOP_PATH } from "utils/constants";
 import Email from "../../apps/Email";
 import RDIChat from "../../apps/RDIChat";
+import TextFolder from "../../apps/TextFolder";
 import { UserProvider } from "../../apps/RDIChat/UserContext";
 
 interface DesktopProps {
@@ -17,9 +18,11 @@ const Desktop: FC<DesktopProps> = ({ children, id }) => {
   const [openApps, setOpenApps] = useState<{
     email: boolean;
     RDIChat: boolean;
+    TextFolder: boolean;
   }>({
     email: false,
     RDIChat: false,
+    TextFolder: false,
   });
 
   useWallpaper(desktopRef);
@@ -36,6 +39,9 @@ const Desktop: FC<DesktopProps> = ({ children, id }) => {
         break;
       case "RDIChat.url":
         setOpenApps((prev) => ({ ...prev, RDIChat: !prev.RDIChat }));
+        break;
+      case "TextFolder.url":
+        setOpenApps((prev) => ({ ...prev, TextFolder: !prev.TextFolder }));
         break;
       default:
         break;
@@ -58,6 +64,12 @@ const Desktop: FC<DesktopProps> = ({ children, id }) => {
       case "RDIChat.url":
         setOpenApps((prev) => {
           const newState = { ...prev, RDIChat: !prev.RDIChat };
+          return newState;
+        });
+        break;
+      case "TextFolder.url":
+        setOpenApps((prev) => {
+          const newState = { ...prev, TextFolder: !prev.TextFolder };
           return newState;
         });
         break;
@@ -129,9 +141,26 @@ const Desktop: FC<DesktopProps> = ({ children, id }) => {
                 "/System/Icons/32x32/chat.png 1x, /System/Icons/48x48/chat.png 2x, /System/Icons/96x96/chat.png 3x, /System/Icons/144x144/chat.png 4x",
             },
           },
+          {
+            "data-file": "TextFolder.url",
+            style: {
+              gridColumnStart: 1,
+              gridRowStart: 5,
+              backgroundColor:
+                selectedIcon === "TextFolder.url" ? "" : "transparent",
+            },
+            iconProps: {
+              "aria-label": "My Documents",
+              title: "Opens TextFolder Application",
+              alt: "My Documents",
+              src: "/System/Icons/48x48/folder.png",
+              srcSet:
+                "/System/Icons/32x32/folder.png 1x, /System/Icons/16x16/folder.png 2x, /System/Icons/96x96/folder.png 3x, /System/Icons/144x144/folder.png 4x",
+            },
+          },
         ]}
         onFileOpen={handleIconClick}
-        onFileDoubleClick={handleIconClick}
+        onFileDoubleClick={handleFileDoubleClick}
         onFileSingleClick={handleFileSingleClick}
       />
       {openApps.email && <Email id={id} key={`email-${openApps.email}`} />}
@@ -140,6 +169,10 @@ const Desktop: FC<DesktopProps> = ({ children, id }) => {
         <UserProvider>
           <RDIChat id={id} key={`RDIChat-${openApps.RDIChat}`} />
         </UserProvider>
+      )}
+
+      {openApps.TextFolder && (
+        <TextFolder id={id} key={`TextFolder-${openApps.TextFolder}`} />
       )}
 
       {children}

@@ -84,8 +84,18 @@
     const errorMessage = document.getElementById('error-message');
     if (yearInput === '1896') {
       errorMessage.textContent = 'Form submitted successfully! Move to the next step.';
+      // Send message to parent window
+      if (window.parent) {
+        window.parent.postMessage({
+          event: 'formSubmitted',
+          details: {
+            yearInput
+          }
+        }, '*');
+      }
       document.getElementById('myForm').reset();
     } else {
+
       errorMessage.textContent = 'Wrong year, try again';
     }
   });

@@ -61,7 +61,7 @@ const StatusBar: FC<StatusBarProps> = ({
         }, Promise.resolve(UNKNOWN_SIZE))
       );
 
-    updateSelectedSize();
+    updateSelectedSize().then((r) => r);
   }, [directory, exists, lstat, selected, stat]);
 
   useLayoutEffect(() => {

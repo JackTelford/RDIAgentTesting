@@ -64,6 +64,7 @@ type FileManagerProps = {
       srcSet: string;
     };
   }>;
+  onFileSingleClick?: (file: string) => void;
   onFileOpen?: (file: string) => void;
   onFileDoubleClick?: (file: string) => void; // Added this line
 };
@@ -91,6 +92,7 @@ const FileManager: FC<FileManagerProps> = ({
   customIcons = [],
   onFileOpen = defaultFileOpenHandler,
   onFileDoubleClick = defaultFileOpenHandler,
+  onFileSingleClick = defaultFileOpenHandler,
 }) => {
   const [currentUrl, setCurrentUrl] = useState(url);
   const [renaming, setRenaming] = useState("");
@@ -262,6 +264,9 @@ const FileManager: FC<FileManagerProps> = ({
                 style={icon.style}
                 data-file={icon["data-file"]}
                 className="sc-iGgVNO iPgsct"
+                onClick={() => {
+                  onFileSingleClick(icon["data-file"]);
+                }}
                 onDoubleClick={() => {
                   onFileDoubleClick(icon["data-file"]);
                 }}
@@ -307,6 +312,12 @@ const FileManager: FC<FileManagerProps> = ({
                 {...(renaming === "" && { onKeyDown: keyShortcuts(file) })}
                 {...focusableEntry(file)}
                 data-file={file}
+                onClick={() => {
+                  onFileSingleClick?.(file);
+                }}
+                onDoubleClick={() => {
+                  onFileDoubleClick?.(file);
+                }}
               >
                 <FileEntry
                   fileActions={fileActions}

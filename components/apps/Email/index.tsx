@@ -41,7 +41,18 @@ const Email: React.FC<ComponentProcessProps> = () => {
         body: body,
         attachments: attachments,
       };
-      console.log("Email sent", emailDetails);
+      /*      console.log("Email sent", emailDetails);*/
+
+      // Send message to parent window
+      if (window.parent) {
+        window.parent.postMessage(
+          {
+            event: "emailSent",
+            details: emailDetails,
+          },
+          "*"
+        );
+      }
 
       setEmail("");
       setCc("");

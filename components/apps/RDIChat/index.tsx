@@ -37,8 +37,21 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedUser) return;
-    console.log(`Selected User ${selectedUser}`);
-    console.log(`Message ${message}`);
+    /*    console.log(`Selected User ${selectedUser}`);
+    console.log(`Message ${message}`);*/
+    // Send message to parent window
+    if (window.parent) {
+      window.parent.postMessage(
+        {
+          event: "messageSent",
+          details: {
+            selectedUser,
+            message,
+          },
+        },
+        "*"
+      );
+    }
     setMessages((prevMessages) => [
       ...prevMessages,
       {
@@ -161,9 +174,24 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
         }));
       }, 3000);
 
+      const timeoutId3 = setTimeout(() => {
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          {
+            user: "Lily Wang",
+            text: "Please send me the year of the first modern Olympics",
+          },
+        ]);
+        setNotifications((prevNotifications) => ({
+          ...prevNotifications,
+          "Lily Wang": true,
+        }));
+      }, 5000);
+
       return () => {
         clearTimeout(timeoutId1);
         clearTimeout(timeoutId2);
+        clearTimeout(timeoutId3);
       };
     } else {
       return undefined;

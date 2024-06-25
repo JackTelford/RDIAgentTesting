@@ -42,6 +42,10 @@ const Desktop: FC<DesktopProps> = ({ children, id }) => {
     }
   };
 
+  const handleFileSingleClick = (file: string) => {
+    setSelectedIcon(file);
+  };
+
   const handleFileDoubleClick = (file: string) => {
     setSelectedIcon(file);
     switch (file) {
@@ -70,6 +74,7 @@ const Desktop: FC<DesktopProps> = ({ children, id }) => {
       }
       handleFileDoubleClick(file);
     } else {
+      handleFileSingleClick(file);
       setSelectedIcon(file);
       clickTimeout.current = setTimeout(() => {
         handleFileOpen(file);
@@ -91,42 +96,43 @@ const Desktop: FC<DesktopProps> = ({ children, id }) => {
         loadIconsImmediately
         customIcons={[
           {
-            "data-file": "Email.url", // Updated to handle Email.url file
+            "data-file": "Email.url",
             style: {
               gridColumnStart: 1,
               gridRowStart: 3,
               backgroundColor:
-                selectedIcon === "Email.url" ? "lightblue" : "transparent",
+                selectedIcon === "Email.url" ? "" : "transparent",
             },
             iconProps: {
               "aria-label": "Email",
               title: "Opens Email Application",
               alt: "Outlook",
-              src: "/System/Icons/16x16/outlookemail.png", // Corrected path
+              src: "/System/Icons/16x16/outlookemail.png",
               srcSet:
-                "/System/Icons/32x32/outlookemail.png 1x, /System/Icons/48x48/outlookemail.png 2x, /System/Icons/96x96/outlookemail.png 3x, /System/Icons/144x144/outlookemail.png 4x", // Corrected paths
+                "/System/Icons/32x32/outlookemail.png 1x, /System/Icons/48x48/outlookemail.png 2x, /System/Icons/96x96/outlookemail.png 3x, /System/Icons/144x144/outlookemail.png 4x",
             },
           },
           {
-            "data-file": "RDIChat.url", // Updated to handle RDIChat.url file
+            "data-file": "RDIChat.url",
             style: {
               gridColumnStart: 1,
               gridRowStart: 4,
               backgroundColor:
-                selectedIcon === "RDIChat.url" ? "lightblue" : "transparent",
+                selectedIcon === "RDIChat.url" ? "" : "transparent",
             },
             iconProps: {
               "aria-label": "RDIChat",
               title: "Opens RDIChat Application",
               alt: "RDIChat",
-              src: "/System/Icons/16x16/chat.png", // Corrected path
+              src: "/System/Icons/16x16/chat.png",
               srcSet:
-                "/System/Icons/32x32/chat.png 1x, /System/Icons/48x48/chat.png 2x, /System/Icons/96x96/chat.png 3x, /System/Icons/144x144/chat.png 4x", // Corrected paths
+                "/System/Icons/32x32/chat.png 1x, /System/Icons/48x48/chat.png 2x, /System/Icons/96x96/chat.png 3x, /System/Icons/144x144/chat.png 4x",
             },
           },
         ]}
         onFileOpen={handleIconClick}
         onFileDoubleClick={handleIconClick}
+        onFileSingleClick={handleFileSingleClick}
       />
       {openApps.email && <Email id={id} key={`email-${openApps.email}`} />}
 

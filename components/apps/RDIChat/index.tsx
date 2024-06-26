@@ -270,7 +270,8 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
                       )}
                     </span>
                     <small>
-                      {getLastMessageForUser(user)?.text || "No messages yet"}
+                      {getLastMessageForUser(user)?.text.substring(0, 90) ||
+                        "No messages yet"}
                     </small>
                   </div>
                 </UserItem>

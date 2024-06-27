@@ -15,8 +15,8 @@ export const ChatContainer = styled.div`
 
 export const ChatHeader = styled.div`
   align-items: center;
-  background-color: #f1f1f1;
-  border-bottom: 1px solid #ccc;
+  background-color: #a2a2a2;
+  border-bottom: 1px solid #000;
   cursor: move; /* Indicate that this part is draggable */
   display: flex;
   justify-content: space-between;

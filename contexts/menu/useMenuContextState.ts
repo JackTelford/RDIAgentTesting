@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { TRANSITIONS_IN_MILLISECONDS } from "utils/constants";
 import { isSafari } from "utils/functions";
 

@@ -233,6 +233,7 @@ const Email: React.FC<ComponentProcessProps> = () => {
             <DropArea $isDragging={isDragging} />
             <form onSubmit={handleSubmit}>
               <StyledInput
+                id={"To"}
                 type="email"
                 placeholder="To"
                 value={email}
@@ -240,12 +241,14 @@ const Email: React.FC<ComponentProcessProps> = () => {
                 required
               />
               <StyledInput
+                id={"Cc"}
                 type="text"
                 placeholder="Cc"
                 value={cc}
                 onChange={(e) => setCc(e.target.value)}
               />
               <StyledInput
+                id={"Subject"}
                 type="text"
                 placeholder="Subject"
                 value={subject}
@@ -253,6 +256,7 @@ const Email: React.FC<ComponentProcessProps> = () => {
                 required
               />
               <StyledTextarea
+                id={"Body"}
                 placeholder="Body"
                 value={body}
                 onChange={(e) => setBody(e.target.value)}

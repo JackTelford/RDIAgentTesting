@@ -1,9 +1,8 @@
-// path: components/apps/TextFolder/TextFolder.tsx
 import React, { useEffect, useRef, useState } from "react";
+import { useMenu, MenuProvider } from "contexts/menu";
 import {
   FolderContainer,
   FileContainer,
-  FileContent,
   ExitButton,
   FolderHeader,
   IconContainer,
@@ -28,6 +27,8 @@ const TextFolder: React.FC<TextFolderProps> = ({ id }) => {
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const formRef = useRef<HTMLDivElement>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
+  const { setMenu } = useMenu();
 
   const handleIconDoubleClick = () => {
     setIsOpen((prevIsOpen) => !prevIsOpen);
@@ -103,8 +104,49 @@ const TextFolder: React.FC<TextFolderProps> = ({ id }) => {
     }
   }, [currentView]);
 
+  const handleContextMenu = (event: React.MouseEvent) => {
+    event.preventDefault();
+    setMenu({
+      items: [
+        { label: "Copy", action: handleCopy },
+        { label: "Paste", action: handlePaste },
+      ],
+      x: event.clientX,
+      y: event.clientY,
+    });
+  };
+
+  const handleCopy = () => {
+    if (textAreaRef.current) {
+      const start = textAreaRef.current.selectionStart;
+      const end = textAreaRef.current.selectionEnd;
+      const selectedText = textAreaRef.current.value.substring(start, end);
+      if (selectedText) {
+        navigator.clipboard
+          .writeText(selectedText)
+          .then(() => {
+            setMenu({ items: [], x: 0, y: 0 });
+          })
+          .catch((err) => {
+            console.error("Failed to copy selected text:", err);
+          });
+      }
+    }
+  };
+
+  const handlePaste = () => {
+    if (textAreaRef.current) {
+      navigator.clipboard.readText().then((text) => {
+        if (textAreaRef.current) {
+          textAreaRef.current.value = text;
+        }
+        setMenu({ items: [], x: 0, y: 0 });
+      });
+    }
+  };
+
   return (
-    <div>
+    <div onContextMenu={handleContextMenu}>
       <div>
         <IconContainer onDoubleClick={handleIconDoubleClick}></IconContainer>
         <span>My Documents</span>
@@ -193,6 +235,7 @@ jtelford@rdiCorp.com
                             ? "This is my third folder"
                             : "This is my fourth folder"
                     }
+                    onContextMenu={handleContextMenu}
                   ></textarea>
                 </NewFolder>
               </>

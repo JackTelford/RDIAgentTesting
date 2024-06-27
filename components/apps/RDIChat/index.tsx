@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ComponentProcessProps } from "components/system/Apps/RenderComponent";
+import { useMenu, MenuProvider } from "contexts/menu";
 import {
   BackButton,
   BackButtonContainer,
@@ -29,17 +30,20 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [offset, setOffset] = useState({ x: 0, y: 0 });
 
+  // notifications
   const [showNotification, setShowNotification] = useState(true);
   const [notifications, setNotifications] = useState<{
     [user: string]: boolean;
   }>({});
 
+  // copy and paste functions
+  const { setMenu } = useMenu();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [inputValue, setInputValue] = useState("");
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedUser) return;
-    /*    console.log(`Selected User ${selectedUser}`);
-    console.log(`Message ${message}`);*/
-    // Send message to parent window
     if (window.parent) {
       window.parent.postMessage(
         {
@@ -60,6 +64,7 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
       },
     ]);
     setMessage("");
+    setInputValue("");
     setNotifications((prevNotifications) => ({
       ...prevNotifications,
       [selectedUser]: true,
@@ -198,6 +203,59 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
     }
   }, [isOpen]);
 
+  // copy and paste functions
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setMessage(newValue);
+    setInputValue(newValue);
+  };
+
+  const handleContextMenu = (event: React.MouseEvent) => {
+    event.preventDefault();
+    setMenu({
+      items: [
+        { label: "Copy", action: handleCopy },
+        { label: "Paste", action: handlePaste },
+      ],
+      x: event.clientX,
+      y: event.clientY,
+    });
+  };
+
+  const handleCopy = () => {
+    if (inputRef.current) {
+      const start = inputRef.current.selectionStart || 0;
+      const end = inputRef.current.selectionEnd || 0;
+      const selectedText = inputRef.current.value.substring(start, end);
+      if (selectedText) {
+        navigator.clipboard
+          .writeText(selectedText)
+          .then(() => {
+            setMenu({ items: [], x: 0, y: 0 });
+          })
+          .catch((err) => {
+            console.error("Failed to copy selected text:", err);
+          });
+      }
+    }
+  };
+
+  const handlePaste = () => {
+    if (inputRef.current) {
+      navigator.clipboard
+        .readText()
+        .then((text) => {
+          setMessage(text);
+          setInputValue(text);
+          setMenu({ items: [], x: 0, y: 0 });
+        })
+        .catch((err) => {
+          console.error("Failed to read text from clipboard:", err);
+        });
+    }
+  };
+  // copy and paste functions
+
   return (
     <div>
       <IconContainer onDoubleClick={handleIconDoubleClick}></IconContainer>
@@ -233,11 +291,12 @@ const RDIChat: React.FC<ComponentProcessProps> = () => {
                   ))}
               </MessagesContainer>
               <form onSubmit={handleSubmit}>
-                <InputContainer>
+                <InputContainer onContextMenu={handleContextMenu}>
                   <input
+                    ref={inputRef}
                     type="text"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
+                    value={inputValue}
+                    onChange={handleChange}
                     placeholder="Type your message..."
                     required
                   />

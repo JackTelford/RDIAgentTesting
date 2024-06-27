@@ -17,7 +17,7 @@ export const EmailBody = styled.div`
   flex: 1;
   overflow: hidden;
   padding: 10px;
-  position: relative; /* Ensures the DropArea is positioned relative to the EmailBody */
+  position: relative;
 `;
 
 export const StyledInput = styled.input`
@@ -28,11 +28,15 @@ export const StyledInput = styled.input`
   width: 100%;
 `;
 
-export const StyledTextarea = styled.textarea`
+export const StyledBodyInput = styled.textarea`
   border: 1px solid #ccc;
   border-radius: 0;
+  font-size: 16px; /* Adjust font size */
+  height: 200px; /* Increase height */
   margin: 0;
   padding: 10px;
+  resize: vertical; /* Allow vertical resizing */
+  white-space: pre-wrap; /* Preserve whitespace and wrap text */
   width: 100%;
 `;
 
@@ -52,7 +56,7 @@ export const SubmitButton = styled.button`
 export const ExitButton = styled.button`
   background-color: red;
   border: none;
-  border-radius: 0;
+  border-radius: 20%;
   color: white;
   cursor: pointer;
   padding: 5px 10px;
@@ -66,17 +70,12 @@ export const ExitButton = styled.button`
 `;
 
 export const EmailHeader = styled.div`
-  align-items: center;
-  background-color: #f1f1f1;
-  border-bottom: 1px solid #ccc;
+  background-color: #a2a2a2;
+  border-bottom: 1px solid #000;
   cursor: move;
   display: flex;
   justify-content: space-between;
   padding: 10px;
-
-  h2 {
-    margin: 0;
-  }
 `;
 
 export const IconContainer = styled.div`
@@ -91,23 +90,14 @@ export const IconContainer = styled.div`
   }
 `;
 
-export const EmailIcon = styled.img`
-  height: 40px;
-  width: 40px;
-
-  &:hover {
-    opacity: 70%;
-  }
-`;
-
 export const DropArea = styled.div<{ $isDragging: boolean }>`
   align-items: center;
   background-color: ${(props) =>
     props.$isDragging ? "#f0f8ff" : "transparent"};
   border: ${(props) => (props.$isDragging ? "2px dashed #007bff" : "none")};
-  inset: 0;
   color: #007bff;
   display: ${(props) => (props.$isDragging ? "flex" : "none")};
+  inset: 0;
   justify-content: center;
   padding: ${(props) => (props.$isDragging ? "10px" : "0")};
   position: absolute; /* Positioned absolutely within the EmailBody */
@@ -124,8 +114,8 @@ export const DropArea = styled.div<{ $isDragging: boolean }>`
 
 export const Toolbar = styled.div`
   align-items: center;
-  background-color: #f1f1f1;
-  border-bottom: 1px solid #ccc;
+  background-color: #d0c9c9;
+  border-bottom: 1px solid #000;
   display: flex;
   justify-content: space-between;
   margin-bottom: 15px;
@@ -163,8 +153,7 @@ export const AttachmentList = styled.div`
 `;
 
 export const UserAvatar = styled.img`
-  border-radius: 50%;
-  height: 40px;
-  margin-right: 10px;
-  width: 40px;
+  border-radius: 30%;
+  height: 50px;
+  width: 50px;
 `;

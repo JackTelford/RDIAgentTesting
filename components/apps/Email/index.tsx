@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { ComponentProcessProps } from "components/system/Apps/RenderComponent";
+import { useMenu, MenuProvider } from "contexts/menu";
 import {
   EmailContainer,
   IconContainer,
@@ -10,10 +11,11 @@ import {
   ExitButton,
   EmailHeader,
   StyledInput,
-  StyledTextarea,
   SubmitButton,
   EmailBody,
+  StyledBodyInput,
 } from "./StyledEmail";
+
 import { userAvatars } from "./UserContext";
 
 const Email: React.FC<ComponentProcessProps> = () => {
@@ -28,12 +30,27 @@ const Email: React.FC<ComponentProcessProps> = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [isPositioned, setIsPositioned] = useState(false);
-
+  const { setMenu } = useMenu();
   const [emailSent, setEmailSent] = useState(false);
+  const [message, setMessage] = useState("");
+  const [inputValue, setInputValue] = useState("");
+  const [lastFocusedElement, setLastFocusedElement] =
+    useState<HTMLElement | null>(null);
+  const textAreaRefs = {
+    email: useRef<HTMLInputElement>(null),
+    cc: useRef<HTMLInputElement>(null),
+    subject: useRef<HTMLInputElement>(null),
+    body: useRef<HTMLTextAreaElement>(null),
+  };
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
+      if (!isValidEmail(email)) {
+        setEmailError("Please enter a valid email address.");
+        return;
+      }
+      setEmailError("");
       const emailDetails = {
         to: email,
         cc: cc,
@@ -41,9 +58,7 @@ const Email: React.FC<ComponentProcessProps> = () => {
         body: body,
         attachments: attachments,
       };
-      /*      console.log("Email sent", emailDetails);*/
-
-      // Send message to parent window
+      console.log("Details of Email sent:", emailDetails);
       if (window.parent) {
         window.parent.postMessage(
           {
@@ -53,13 +68,11 @@ const Email: React.FC<ComponentProcessProps> = () => {
           "*"
         );
       }
-
       setEmail("");
       setCc("");
       setSubject("");
       setBody("");
       setAttachments([]);
-
       setEmailSent(true);
       setTimeout(() => {
         setEmailSent(false);
@@ -95,7 +108,7 @@ const Email: React.FC<ComponentProcessProps> = () => {
   };
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    if (e.target !== e.currentTarget) return; // Only handle dragging if clicking on the header
+    if (e.target !== e.currentTarget) return;
 
     const form = formRef.current;
     if (form) {
@@ -134,22 +147,18 @@ const Email: React.FC<ComponentProcessProps> = () => {
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-
     const droppedFiles: string[] = [];
-
     if (e.dataTransfer.items) {
       for (let i = 0; i < e.dataTransfer.items.length; i++) {
         const item = e.dataTransfer.items[i];
         if (item.kind === "file") {
           const file = item.getAsFile();
           if (file) {
-            droppedFiles.push(file.name); // Use file.name to get only the file name
-            console.log("File dropped:", file.name);
+            droppedFiles.push(file.name);
           }
         } else if (item.kind === "string") {
           item.getAsString((data) => {
             if (data.startsWith("[")) {
-              console.log("String dropped:", data);
               droppedFiles.push(data);
               setAttachments((prev) => [
                 ...new Set([...prev, ...droppedFiles]),
@@ -177,9 +186,7 @@ const Email: React.FC<ComponentProcessProps> = () => {
     setIsDragging(false);
   };
 
-  // Attach button Logic
   const fileInputRef = useRef<HTMLInputElement>(null);
-
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []).map((file) => file.name);
     setAttachments((prev) => [...new Set([...prev, ...files])]);
@@ -190,8 +197,128 @@ const Email: React.FC<ComponentProcessProps> = () => {
       fileInputRef.current.click();
     }
   };
-  // Attach button Logic
 
+  // Copy paste logic
+  const [isEmailValid, setIsEmailValid] = useState(true);
+  const [emailError, setEmailError] = useState("");
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEmail(value);
+    if (!isValidEmail(value)) {
+      setIsEmailValid(false);
+    } else {
+      setEmailError("");
+      setIsEmailValid(true);
+    }
+  };
+  const handleCcChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCc(e.target.value);
+  };
+  const handleSubjectChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSubject(e.target.value);
+  };
+  const handleBodyChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setBody(e.target.value);
+  };
+
+  const handleContextMenu = (event: React.MouseEvent) => {
+    event.preventDefault();
+    const { clientX, clientY } = event;
+    const element = event.target as HTMLElement;
+    setMenu({
+      items: [
+        {
+          label: "Copy",
+          action: () => handleCopy(element),
+        },
+        {
+          label: "Paste",
+          action: () => handlePaste(element),
+        },
+      ],
+      x: clientX,
+      y: clientY,
+    });
+  };
+
+  const handleCopy = (element: HTMLElement) => {
+    if (
+      element instanceof HTMLInputElement ||
+      element instanceof HTMLTextAreaElement
+    ) {
+      const selectionStart = element.selectionStart ?? 0;
+      const selectionEnd = element.selectionEnd ?? 0;
+      const selectedText = element.value.substring(
+        selectionStart,
+        selectionEnd
+      );
+      if (selectedText) {
+        navigator.clipboard
+          .writeText(selectedText)
+          .then(() => {
+            setMenu({ items: [], x: 0, y: 0 });
+          })
+          .catch((err) => {
+            console.error("Failed to copy selected text:", err);
+          });
+      }
+    }
+  };
+
+  const handlePaste = (element: HTMLElement) => {
+    if (
+      lastFocusedElement instanceof HTMLInputElement ||
+      lastFocusedElement instanceof HTMLTextAreaElement
+    ) {
+      navigator.clipboard
+        .readText()
+        .then((text) => {
+          if (document.body.contains(lastFocusedElement)) {
+            const selectionStart = lastFocusedElement.selectionStart ?? 0;
+            const selectionEnd = lastFocusedElement.selectionEnd ?? 0;
+            const currentValue = lastFocusedElement.value;
+            const newValue =
+              currentValue.slice(0, selectionStart) +
+              text +
+              currentValue.slice(selectionEnd);
+            lastFocusedElement.value = newValue;
+            lastFocusedElement.setSelectionRange(
+              selectionStart + text.length,
+              selectionStart + text.length
+            );
+            switch (lastFocusedElement.id) {
+              case "To":
+                setEmail(newValue);
+                break;
+              case "Cc":
+                setCc(newValue);
+                break;
+              case "Subject":
+                setSubject(newValue);
+                break;
+              case "Body":
+                setBody(newValue);
+                break;
+              default:
+                break;
+            }
+
+            const inputEvent = new Event("input", { bubbles: true });
+            lastFocusedElement.dispatchEvent(inputEvent);
+            setMenu({ items: [], x: 0, y: 0 });
+          }
+        })
+        .catch((err) => {
+          console.error("Failed to read clipboard contents:", err);
+        });
+    }
+  };
+  // copy and paste logic end
   return (
     <div>
       <IconContainer onDoubleClick={handleIconDoubleClick}></IconContainer>
@@ -203,6 +330,7 @@ const Email: React.FC<ComponentProcessProps> = () => {
             left: `${position.x}px`,
             top: `${position.y}px`,
           }}
+          onContextMenu={handleContextMenu}
         >
           <EmailHeader onMouseDown={handleMouseDown}>
             <h2>Email</h2>
@@ -231,37 +359,58 @@ const Email: React.FC<ComponentProcessProps> = () => {
             onDragLeave={handleDragLeave}
           >
             <DropArea $isDragging={isDragging} />
+            {emailSent && <h3 style={{ color: "green" }}>Email Sent</h3>}
             <form onSubmit={handleSubmit}>
               <StyledInput
                 id={"To"}
-                type="email"
+                type="text"
                 placeholder="To"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleEmailChange}
                 required
+                ref={textAreaRefs.email}
+                onFocus={(e) => {
+                  setLastFocusedElement(e.target);
+                }}
+                onContextMenu={handleContextMenu}
               />
+              {emailError && <p style={{ color: "red" }}>{emailError}</p>}
               <StyledInput
                 id={"Cc"}
                 type="text"
                 placeholder="Cc"
                 value={cc}
-                onChange={(e) => setCc(e.target.value)}
+                onChange={handleCcChange}
+                ref={textAreaRefs.cc}
+                onFocus={(e) => {
+                  setLastFocusedElement(e.target);
+                }}
+                onContextMenu={handleContextMenu}
               />
               <StyledInput
                 id={"Subject"}
                 type="text"
                 placeholder="Subject"
                 value={subject}
-                onChange={(e) => setSubject(e.target.value)}
+                onChange={handleSubjectChange}
                 required
+                ref={textAreaRefs.subject}
+                onFocus={(e) => {
+                  setLastFocusedElement(e.target);
+                }}
+                onContextMenu={handleContextMenu}
               />
-              <StyledTextarea
+              <StyledBodyInput
                 id={"Body"}
                 placeholder="Body"
                 value={body}
-                onChange={(e) => setBody(e.target.value)}
-                rows={10}
+                onChange={handleBodyChange}
                 required
+                ref={textAreaRefs.body}
+                onFocus={(e) => {
+                  setLastFocusedElement(e.target);
+                }}
+                onContextMenu={handleContextMenu}
               />
               <AttachmentList>
                 <strong>Attachments:</strong>
@@ -272,7 +421,6 @@ const Email: React.FC<ComponentProcessProps> = () => {
                 </ul>
               </AttachmentList>
               <SubmitButton type="submit">Send</SubmitButton>
-              {emailSent && <p style={{ color: "red" }}>Email Sent</p>}
             </form>
           </EmailBody>
         </EmailContainer>
@@ -280,5 +428,4 @@ const Email: React.FC<ComponentProcessProps> = () => {
     </div>
   );
 };
-
 export default Email;

@@ -42,11 +42,6 @@ const StyledBrowser = styled.div<StyledBrowserProps>`
         width: 20px;
       }
 
-      &:hover {
-        background-color: rgb(241, 241, 241);
-        width: 50px;
-      }
-
       &:active {
         background-color: rgb(110, 110, 110);
       }
@@ -116,8 +111,14 @@ const StyledBrowser = styled.div<StyledBrowserProps>`
         background-color: white;
         border-bottom: none;
         color: black;
-        padding-bottom: 7px; /* Adjust for border-bottom removal */
+        padding-bottom: 7px;
       }
+    }
+
+    .tab-container {
+      align-items: center;
+      display: flex;
+      justify-content: space-between;
     }
 
     .close-tab {
@@ -125,7 +126,7 @@ const StyledBrowser = styled.div<StyledBrowserProps>`
       border: none;
       color: red;
       cursor: pointer;
-      margin-left: auto;
+      margin-left: 8px;
       padding: 0 6px;
       width: fit-content;
 
@@ -153,6 +154,29 @@ const StyledBrowser = styled.div<StyledBrowserProps>`
         background-color: rgb(160, 160, 160);
       }
     }
+  }
+
+  .bookmark-button {
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    width: 50px;
+  }
+
+  .bookmark-container {
+    align-items: center;
+    display: flex;
+    padding: 5px;
+
+    &:hover {
+      background-color: rgb(140, 140, 140);
+    }
+  }
+
+  .bookmark-name {
+    font-size: 16px;
+    margin-left: 8px;
+    white-space: nowrap;
   }
 `;
 

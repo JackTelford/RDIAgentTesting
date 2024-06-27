@@ -1,5 +1,6 @@
 import { basename, join, resolve } from "path";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useMenu, MenuProvider } from "contexts/menu";
 import useHistoryMenu from "components/apps/Browser/useHistoryMenu";
 import useBookmarkMenu from "components/apps/Browser/useBookmarkMenu";
 import {
@@ -432,34 +433,126 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
     }
   };
 
+  // copy paste logic
+  const { setMenu } = useMenu();
+  const [lastFocusedElement, setLastFocusedElement] =
+    useState<HTMLElement | null>(null);
+  const handleContextMenu = (event: React.MouseEvent) => {
+    event.preventDefault();
+    const { clientX, clientY } = event;
+    const element = event.target as HTMLElement;
+    setMenu({
+      items: [
+        {
+          label: "Copy",
+          action: () => handleCopy(element),
+        },
+        {
+          label: "Paste",
+          action: () => handlePaste(element),
+        },
+      ],
+      x: clientX,
+      y: clientY,
+    });
+  };
+  const handleCopy = (element: HTMLElement) => {
+    if (
+      element instanceof HTMLInputElement ||
+      element instanceof HTMLTextAreaElement
+    ) {
+      const selectionStart = element.selectionStart ?? 0;
+      const selectionEnd = element.selectionEnd ?? 0;
+      const selectedText = element.value.substring(
+        selectionStart,
+        selectionEnd
+      );
+      if (selectedText) {
+        navigator.clipboard
+          .writeText(selectedText)
+          .then(() => {
+            setMenu({ items: [], x: 0, y: 0 });
+          })
+          .catch((err) => {
+            console.error("Failed to copy selected text:", err);
+          });
+      }
+    }
+  };
+  const handlePaste = (element: HTMLElement) => {
+    if (
+      lastFocusedElement instanceof HTMLInputElement ||
+      lastFocusedElement instanceof HTMLTextAreaElement
+    ) {
+      navigator.clipboard
+        .readText()
+        .then((text) => {
+          if (document.body.contains(lastFocusedElement)) {
+            const selectionStart = lastFocusedElement.selectionStart ?? 0;
+            const selectionEnd = lastFocusedElement.selectionEnd ?? 0;
+            const currentValue = lastFocusedElement.value;
+            const newValue =
+              currentValue.slice(0, selectionStart) +
+              text +
+              currentValue.slice(selectionEnd);
+            lastFocusedElement.value = newValue;
+            lastFocusedElement.setSelectionRange(
+              selectionStart + text.length,
+              selectionStart + text.length
+            );
+
+            // Manually update the state
+            switch (lastFocusedElement.id) {
+              case "urlInput":
+                setUrl(newValue);
+                break;
+              default:
+                break;
+            }
+
+            const inputEvent = new Event("input", { bubbles: true });
+            lastFocusedElement.dispatchEvent(inputEvent);
+            setMenu({ items: [], x: 0, y: 0 });
+          }
+        })
+        .catch((err) => {
+          console.error("Failed to read clipboard contents:", err);
+        });
+    }
+  };
+
+  // copy and paste logic
+
   return (
     <StyledBrowser $hasSrcDoc={Boolean(srcDoc)}>
       <div id="tabs-nav">
         {tabs.map((tab) => (
           <div key={tab.id} className="tab">
-            <Button
-              id={`close-tab-${tab.id}`}
-              className="close-tab"
-              onClick={() => closeTab(tab.id)}
-              {...label(`Close tab ${tab.url}`)}
-            >
-              X
-            </Button>
-
-            <Button
-              id={`tab-${tab.id}`}
-              key={tab.id}
-              onClick={() => switchTab(tab.id)}
-              {...label(`Switch to tab ${tab.url}`)}
-            >
-              {tab.url}
-            </Button>
+            <div className="tab-container">
+              <Button
+                id={`tab-${tab.id}`}
+                key={tab.id}
+                onClick={() => switchTab(tab.id)}
+                {...label(`Switch to tab ${tab.url}`)}
+              >
+                {tab.url}
+              </Button>
+              <Button
+                id={`close-tab-${tab.id}`}
+                className="close-tab"
+                onClick={() => closeTab(tab.id)}
+                {...label(`Close tab ${tab.url}`)}
+              >
+                X
+              </Button>
+            </div>
           </div>
         ))}
         <Button id="add-tab" onClick={addTab} {...label(`Add new tab`)}>
           +
         </Button>
       </div>
+
       <nav>
         <div>
           <Button
@@ -501,7 +594,9 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
               inputRef.current.blur();
             }
           }}
+          onContextMenu={handleContextMenu}
           type="text"
+          id="urlInput"
         />
       </nav>
       <nav>
@@ -510,8 +605,6 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
             <Button
               className="bookmark-button"
               onClick={({ ctrlKey }) => {
-                /*                console.log(`bookmark ${name}`);*/
-                // Send message to parent window
                 if (window.parent) {
                   window.parent.postMessage(
                     {
@@ -524,7 +617,6 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
                     "*"
                   );
                 }
-
                 if (ctrlKey) {
                   open("Browser", { url: bookmarkUrl });
                 } else {
@@ -537,8 +629,8 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
               {...bookmarkMenu}
             >
               <Icon alt={name} imgSize={32} src={icon} />
+              <span className="bookmark-name">{name}</span>
             </Button>
-            <span className="bookmark-name">{name}</span>
           </div>
         ))}
       </nav>

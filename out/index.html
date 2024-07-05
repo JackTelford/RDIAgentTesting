@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <meta charSet="utf-8" />
+  <meta charset="utf-8" />
   <title>daedalOS</title>
   <meta
     content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, interactive-widget=resizes-content"
@@ -16,166 +16,37 @@
   <link href="https://dustinbrett.com/rss.xml" rel="alternate" title="RSS Feed for daedalOS"
     type="application/rss+xml" />
   <link as="image"
-    imageSrcSet="System/Icons/48x48/shortcut.webp, System/Icons/96x96/shortcut.webp 2x, System/Icons/144x144/shortcut.webp 3x"
+    imagesrcset="/System/Icons/48x48/shortcut.webp, /System/Icons/96x96/shortcut.webp 2x, /System/Icons/144x144/shortcut.webp 3x"
     rel="preload" fetchpriority="high" />
   <link as="image"
-    imageSrcSet="System/Icons/48x48/pc.webp, System/Icons/96x96/pc.webp 2x, System/Icons/144x144/pc.webp 3x"
+    imagesrcset="/System/Icons/48x48/pc.webp, /System/Icons/96x96/pc.webp 2x, /System/Icons/144x144/pc.webp 3x"
     rel="preload" fetchpriority="high" />
   <link as="image"
-    imageSrcSet="System/Icons/48x48/user.webp, System/Icons/96x96/user.webp 2x, System/Icons/144x144/user.webp 3x"
+    imagesrcset="/System/Icons/48x48/user.webp, /System/Icons/96x96/user.webp 2x, /System/Icons/144x144/user.webp 3x"
     rel="preload" fetchpriority="high" />
   <meta name="next-head-count" content="13" />
   <noscript data-n-css=""></noscript>
+
+  <!-- Updated script sources to use relative paths -->
   <script defer="" nomodule="" src="./_next/static/chunks/polyfills-78c92fac7aa8fdd8.js"></script>
   <script src="./_next/static/chunks/webpack-9babedba63559730.js" defer=""></script>
   <script src="./_next/static/chunks/framework-0e8d27528ba61906.js" defer=""></script>
   <script src="./_next/static/chunks/main-6b270e94adaafdef.js" defer=""></script>
-  <script src="./_next/static/chunks/pages/_app-318a2d8beb6ec959.js" defer=""></script>
+  <script src="./_next/static/chunks/pages/_app-2b0a3494c0b1ea7c.js" defer=""></script>
   <script src="./_next/static/chunks/4110-2921971c4e837e3f.js" defer=""></script>
   <script src="./_next/static/chunks/4162-aff352c28ba125c3.js" defer=""></script>
   <script src="./_next/static/chunks/pages/index-13ddc0e1d5ecbe55.js" defer=""></script>
-  <script src="./_next/static/3J_mN52rASLC7RPxwt_h4/_buildManifest.js" defer=""></script>
-  <script src="./_next/static/3J_mN52rASLC7RPxwt_h4/_ssgManifest.js" defer=""></script>
-  <!-- Add missing scripts -->
+  <script src="./_next/static/VHecSSUYVTi6gTmZj4Ku-/_buildManifest.js" defer=""></script>
+  <script src="./_next/static/VHecSSUYVTi6gTmZj4Ku-/_ssgManifest.js" defer=""></script>
+  <!-- Added missing script chunks -->
   <script src="./_next/static/chunks/8709.e412b4c68a1b4584.js" defer=""></script>
   <script src="./_next/static/chunks/7237.24f7551ceb6c9b7c.js" defer=""></script>
   <script src="./_next/static/chunks/2552.1518b617b8c96dec.js" defer=""></script>
   <script src="./_next/static/chunks/1872.10d372787a669431.js" defer=""></script>
-
-  <!-- JavaScript function to correct paths -->
-
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const scripts = document.querySelectorAll('script[src]');
-      scripts.forEach(script => {
-        if (script.src.startsWith('/_next/')) {
-          script.src = '.' + script.src;
-          console.log("Updated script src to:", script.src);
-        }
-      });
-
-      const links = document.querySelectorAll('link[href]');
-      links.forEach(link => {
-        if (link.href.startsWith('/_next/')) {
-          link.href = '.' + link.href;
-          console.log("Updated link href to:", link.href);
-        }
-      });
-    });
-  </script>
-
-  <script>
-    !function () {
-      "use strict";
-      let e;
-      let s = {
-        camera: { far: 400, fov: 30, near: .1 },
-        color: "hsl(225, 40%, 20%)",
-        colorCycleSpeed: 10,
-        forceAnimate: !0,
-        hh: 50,
-        hue: 225,
-        lightness: 20,
-        material: { options: { fog: !1, wireframe: !1 } },
-        saturation: 40,
-        shininess: 35,
-        waveHeight: 20,
-        waveSpeed: .25,
-        ww: 50
-      };
-      let t = { gyroControls: !1, mouseControls: !1, mouseEase: !1, touchControls: !1 };
-      let i = ["./System/Vanta.js/three.min.js", "./System/Vanta.js/vanta.waves.min.js"];
-
-      console.log("Initializing VANTA script...");
-
-      globalThis.addEventListener("message", ({ data: o }) => {
-        console.log("Received message:", o);
-        if ("undefined" != typeof WebGLRenderingContext) {
-          if ("init" === o) {
-            console.log("Initializing VANTA with scripts:", i);
-            globalThis.importScripts(...i);
-          } else if (o instanceof DOMRect) {
-            let { width: s, height: t } = o;
-            console.log("Resizing to width:", s, "height:", t);
-            e?.renderer.setSize(s, t);
-            e?.resize();
-          } else {
-            let { canvas: i, config: r, devicePixelRatio: a } = o;
-            let { VANTA: { current: n = e, WAVES: l } = {} } = globalThis;
-            if (!i || !l) return;
-            console.log("Initializing VANTA effect on canvas with config:", r);
-            n && n.destroy();
-            try {
-              e = l({ ...r || s, ...t, canvas: i, devicePixelRatio: a });
-            } catch (e) {
-              console.error("Error initializing VANTA effect:", e?.message);
-              globalThis.postMessage({ message: e?.message, type: "[error]" });
-            }
-          }
-        }
-      }, { passive: !0 });
-
-      console.log("VANTA script initialization complete.");
-    }(), _N_E = {};
-  </script>
+  <script src="./_next/static/chunks/2719.277a750edb736435.js" defer=""></script>
+  <script src="./_next/static/chunks/8864.5ab9b818adc85dce.js" defer=""></script>
 
 
-
-
-  <!-- <script>
-    !function () {
-      "use strict";
-      let e;
-      let s = {
-        camera: { far: 400, fov: 30, near: .1 },
-        color: "hsl(225, 40%, 20%)",
-        colorCycleSpeed: 10,
-        forceAnimate: !0,
-        hh: 50,
-        hue: 225,
-        lightness: 20,
-        material: { options: { fog: !1, wireframe: !1 } },
-        saturation: 40,
-        shininess: 35,
-        waveHeight: 20,
-        waveSpeed: .25,
-        ww: 50
-      };
-      let t = { gyroControls: !1, mouseControls: !1, mouseEase: !1, touchControls: !1 };
-      let i = ["./System/Vanta.js/three.min.js", "./System/Vanta.js/vanta.waves.min.js"];
-
-      console.log("Initializing VANTA script...");
-
-      globalThis.addEventListener("message", ({ data: o }) => {
-        console.log("Received message:", o);
-        if ("undefined" != typeof WebGLRenderingContext) {
-          if ("init" === o) {
-            console.log("Initializing VANTA with scripts:", i);
-            globalThis.importScripts(...i);
-          } else if (o instanceof DOMRect) {
-            let { width: s, height: t } = o;
-            console.log("Resizing to width:", s, "height:", t);
-            e?.renderer.setSize(s, t);
-            e?.resize();
-          } else {
-            let { canvas: i, config: r, devicePixelRatio: a } = o;
-            let { VANTA: { current: n = e, WAVES: l } = {} } = globalThis;
-            if (!i || !l) return;
-            console.log("Initializing VANTA effect on canvas with config:", r);
-            n && n.destroy();
-            try {
-              e = l({ ...r || s, ...t, canvas: i, devicePixelRatio: a });
-            } catch (e) {
-              console.error("Error initializing VANTA effect:", e?.message);
-              globalThis.postMessage({ message: e?.message, type: "[error]" });
-            }
-          }
-        }
-      }, { passive: !0 });
-
-      console.log("VANTA script initialization complete.");
-    }(), _N_E = {};
-  </script> -->
 
   <style data-styled="" data-styled-version="6.1.11">
     *,
@@ -195,7 +66,7 @@
 
     body,
     html {
-      font-family: 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', sans-serif;
+      font-family: "Segoe UI", system-ui, Roboto, "Helvetica Neue", sans-serif;
     }
 
     body {
@@ -296,7 +167,7 @@
 
     .hCeBIA {
       display: flex;
-      fill: #FFF;
+      fill: #fff;
       height: 100%;
       left: 0;
       place-content: center;
@@ -330,7 +201,7 @@
 
     .eAUDhX {
       display: flex;
-      fill: #FFF;
+      fill: #fff;
       height: 100%;
       left: 36px;
       place-content: center;
@@ -384,46 +255,46 @@
   <div id="__next">
     <main class="sc-fqkwJk bhtFWS">
       <ol tabindex="-1" class="sc-gsFSjX dYayYM">
-        <li draggable="true" style="grid-column-start:1;grid-row-start:3;background-color:transparent"
+        <li draggable="true" style="grid-column-start: 1; grid-row-start: 3; background-color: transparent;"
           data-file="Email.url" class="sc-iGgVNO iPgsct">
           <button aria-label="Email" type="button" class="sc-aYaIB hErKd" title="Opens Email Application">
             <figure class="sc-dcJtft lflafl">
               <picture>
                 <source media="(min-resolution: 2.01x), (-webkit-min-device-pixel-ratio: 2.01)"
-                  srcSet="System/Icons/32x32/outlookemail.png 1x, System/Icons/48x48/outlookemail.png 2x, System/Icons/96x96/outlookemail.png 3x, System/Icons/144x144/outlookemail.png 4x"
+                  srcset="/System/Icons/32x32/outlookemail.png 1x, /System/Icons/48x48/outlookemail.png 2x, /System/Icons/96x96/outlookemail.png 3x, /System/Icons/144x144/outlookemail.png 4x"
                   type="image/webp" />
                 <img alt="Outlook" decoding="async" draggable="false" height="48" loading="eager" width="48"
-                  class="sc-gEvDqW jWxKGF" src="System/Icons/16x16/outlookemail.png" />
+                  class="sc-gEvDqW jWxKGF" src="/System/Icons/16x16/outlookemail.png" />
               </picture>
               <figcaption aria-level="1" role="heading">Outlook</figcaption>
             </figure>
           </button>
         </li>
-        <li draggable="true" style="grid-column-start:1;grid-row-start:4;background-color:transparent"
+        <li draggable="true" style="grid-column-start: 1; grid-row-start: 4; background-color: transparent;"
           data-file="RDIChat.url" class="sc-iGgVNO iPgsct">
           <button aria-label="RDIChat" type="button" class="sc-aYaIB hErKd" title="Opens RDIChat Application">
             <figure class="sc-dcJtft lflafl">
               <picture>
                 <source media="(min-resolution: 2.01x), (-webkit-min-device-pixel-ratio: 2.01)"
-                  srcSet="System/Icons/32x32/chat.png 1x, System/Icons/48x48/chat.png 2x, System/Icons/96x96/chat.png 3x, System/Icons/144x144/chat.png 4x"
+                  srcset="/System/Icons/32x32/chat.png 1x, /System/Icons/48x48/chat.png 2x, /System/Icons/96x96/chat.png 3x, /System/Icons/144x144/chat.png 4x"
                   type="image/webp" />
                 <img alt="RDIChat" decoding="async" draggable="false" height="48" loading="eager" width="48"
-                  class="sc-gEvDqW jWxKGF" src="System/Icons/16x16/chat.png" />
+                  class="sc-gEvDqW jWxKGF" src="/System/Icons/16x16/chat.png" />
               </picture>
               <figcaption aria-level="1" role="heading">RDIChat</figcaption>
             </figure>
           </button>
         </li>
-        <li draggable="true" style="grid-column-start:1;grid-row-start:5;background-color:transparent"
+        <li draggable="true" style="grid-column-start: 1; grid-row-start: 5; background-color: transparent;"
           data-file="TextFolder.url" class="sc-iGgVNO iPgsct">
           <button aria-label="My Documents" type="button" class="sc-aYaIB hErKd" title="Opens TextFolder Application">
             <figure class="sc-dcJtft lflafl">
               <picture>
                 <source media="(min-resolution: 2.01x), (-webkit-min-device-pixel-ratio: 2.01)"
-                  srcSet="System/Icons/32x32/folder.png 1x, System/Icons/16x16/folder.png 2x, System/Icons/96x96/folder.png 3x, System/Icons/144x144/folder.png 4x"
+                  srcset="/System/Icons/32x32/folder.png 1x, /System/Icons/16x16/folder.png 2x, /System/Icons/96x96/folder.png 3x, /System/Icons/144x144/folder.png 4x"
                   type="image/webp" />
                 <img alt="My Documents" decoding="async" draggable="false" height="48" loading="eager" width="48"
-                  class="sc-gEvDqW jWxKGF" src="System/Icons/48x48/folder.png" />
+                  class="sc-gEvDqW jWxKGF" src="/System/Icons/48x48/folder.png" />
               </picture>
               <figcaption aria-level="1" role="heading">My Documents</figcaption>
             </figure>
@@ -432,11 +303,12 @@
       </ol>
       <nav tabindex="-1" class="sc-JrEyx hAjgtW">
         <div role="button" tabindex="-1" aria-label="Start" title="Start" class="sc-aYaIB sc-fXSgRJ dhoiJG hCeBIA">
-          <img src="System/Icons/Favicons/16x16/WindowsG.png" alt="Start Button Icon" style="width:100%;height:100%" />
+          <img src="/System/Icons/Favicons/16x16/WindowsG.png" alt="Start Button Icon"
+            style="width: 100%; height: 100%;" />
         </div>
         <div role="button" tabindex="-1" aria-label="Type here to search" title="Type here to search"
           class="sc-aYaIB sc-fXSgRJ dhoiJG eAUDhX">
-          <svg style="border:1px solid transparent;border-right:0;border-top:0;height:17px;margin-left:-1px"
+          <svg style="border: 1px solid transparent; border-right: 0; border-top: 0; height: 17px; margin-left: -1px;"
             viewBox="3 -1 30 30" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M21 0q1.516 0 2.922.391T26.547 1.5t2.227 1.727 1.727 2.227 1.109 2.625.391 2.922-.391 2.922-1.109 2.625-1.727 2.227-2.227 1.727-2.625 1.109-2.922.391q-1.953 0-3.742-.656t-3.289-1.891L1.703 31.705q-.297.297-.703.297t-.703-.297T0 31.002t.297-.703l12.25-12.266q-1.234-1.5-1.891-3.289T10 11.002q0-1.516.391-2.922T11.5 5.455t1.727-2.227 2.227-1.727T18.079.392t2.922-.391zm0 20q1.859 0 3.5-.711t2.859-1.93 1.93-2.859T30 11t-.711-3.5-1.93-2.859-2.859-1.93T21 2t-3.5.711-2.859 1.93-1.93 2.859T12 11t.711 3.5 1.93 2.859 2.859 1.93T21 20z"
@@ -448,18 +320,89 @@
     </main>
   </div>
   <script id="__NEXT_DATA__" type="application/json">
-    {
-      "props": {
-        "pageProps": {}
-      },
-      "page": "/",
-      "query": {},
-      "buildId": "3J_mN52rASLC7RPxwt_h4",
-      "nextExport": true,
-      "autoExport": true,
-      "isFallback": false,
-      "scriptLoader": []
-    }
+            { "props": { "pageProps": {} }, "page": "/", "query": {}, "buildId": "VHecSSUYVTi6gTmZj4Ku-", "nextExport": true, "autoExport": true, "isFallback": false, "scriptLoader": [] }
+        </script>
+
+  <!-- Script to update script and link tags to use relative paths -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const scripts = document.querySelectorAll("script[src]");
+      scripts.forEach((script) => {
+        if (script.src.startsWith("/_next/")) {
+          script.src = "." + script.src;
+          console.log("Updated script src to:", script.src);
+        }
+      });
+
+      const links = document.querySelectorAll("link[href]");
+      links.forEach((link) => {
+        if (link.href.startsWith("/_next/")) {
+          link.href = "." + link.href;
+          console.log("Updated link href to:", link.href);
+        }
+      });
+    });
+  </script>
+
+  <!-- VANTA effect script initialization -->
+  <script>
+    !(function () {
+      "use strict";
+      let e;
+      let s = {
+        camera: { far: 400, fov: 30, near: 0.1 },
+        color: "hsl(225, 40%, 20%)",
+        colorCycleSpeed: 10,
+        forceAnimate: !0,
+        hh: 50,
+        hue: 225,
+        lightness: 20,
+        material: { options: { fog: !1, wireframe: !1 } },
+        saturation: 40,
+        shininess: 35,
+        waveHeight: 20,
+        waveSpeed: 0.25,
+        ww: 50,
+      };
+      let t = { gyroControls: !1, mouseControls: !1, mouseEase: !1, touchControls: !1 };
+      let i = ["./System/Vanta.js/three.min.js", "./System/Vanta.js/vanta.waves.min.js"];
+
+      console.log("Initializing VANTA script...");
+
+      globalThis.addEventListener(
+        "message",
+        ({ data: o }) => {
+          console.log("Received message:", o);
+          if ("undefined" != typeof WebGLRenderingContext) {
+            if ("init" === o) {
+              console.log("Initializing VANTA with scripts:", i);
+              globalThis.importScripts(...i);
+            } else if (o instanceof DOMRect) {
+              let { width: s, height: t } = o;
+              console.log("Resizing to width:", s, "height:", t);
+              e?.renderer.setSize(s, t);
+              e?.resize();
+            } else {
+              let { canvas: i, config: r, devicePixelRatio: a } = o;
+              let { VANTA: { current: n = e, WAVES: l } = {} } = globalThis;
+              if (!i || !l) return;
+              console.log("Initializing VANTA effect on canvas with config:", r);
+              n && n.destroy();
+              try {
+                e = l({ ...(r || s), ...t, canvas: i, devicePixelRatio: a });
+              } catch (e) {
+                console.error("Error initializing VANTA effect:", e?.message);
+                globalThis.postMessage({ message: e?.message, type: "[error]" });
+              }
+            }
+          }
+        },
+        { passive: !0 }
+      );
+
+      console.log("VANTA script initialization complete.");
+    })(),
+      (_N_E = {});
   </script>
 </body>
 

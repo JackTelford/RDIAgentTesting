@@ -1,5 +1,4 @@
 import { makeFullScreenQuad, makePipeline } from "./utils.js";
-
 import makeBloomPass from "./bloomPass.js";
 import makeImagePass from "./imagePass.js";
 import getLKG from "./lkgHelper.js";
@@ -12,7 +11,7 @@ import makeStripePass from "./stripePass.js";
 const effects = {
 	none: null,
 	plain: makePalettePass,
-  palette: makePalettePass,
+	palette: makePalettePass,
 	customStripes: makeStripePass,
 	stripes: makeStripePass,
 	pride: makeStripePass,
@@ -38,21 +37,22 @@ delete window.Matrix;
 let previouslyLoaded = false;
 
 window.Matrix = async (canvas, config) => {
-
-	await Promise.all([loadJS("/System/Matrix/lib/regl.min.js"), loadJS("/System/Matrix/lib/gl-matrix.js")]);
+	await Promise.all([
+		loadJS("/System/Matrix/lib/regl.min.js"),
+		loadJS("/System/Matrix/lib/gl-matrix.js")
+	]);
 
 	const resize = (resOverride = config.resolution) => {
-    const resolution = typeof resOverride === "number" ? resOverride : config.resolution;
-
+		const resolution = typeof resOverride === "number" ? resOverride : config.resolution;
 		canvas.width = Math.ceil(canvas.clientWidth * resolution);
 		canvas.height = Math.ceil(canvas.clientHeight * resolution);
 	};
 	window.onresize = resize;
 
-  if (previouslyLoaded) {
-    resize(1.01);
-    setTimeout(resize, 250);
-  }
+	if (previouslyLoaded) {
+		resize(1.01);
+		setTimeout(resize, 250);
+	}
 
 	const regl = createREGL({
 		canvas,
@@ -90,37 +90,37 @@ window.Matrix = async (canvas, config) => {
 		});
 	});
 
-  window.WallpaperDestroy = () => {
-    previouslyLoaded = true;
+	window.WallpaperDestroy = () => {
+		previouslyLoaded = true;
 
-    try {
-      drawToScreen.destroy();
-    } catch {
-      // Failed to destroy
-    }
+		try {
+			drawToScreen.destroy();
+		} catch {
+			// Failed to destroy
+		}
 
-    try {
-      fullScreenQuad.destroy();
-    } catch {
-      // Failed to destroy
-    }
+		try {
+			fullScreenQuad.destroy();
+		} catch {
+			// Failed to destroy
+		}
 
-    try {
-      screenUniforms.tex.destroy();
-    } catch {
-      // Failed to destroy
-    }
+		try {
+			screenUniforms.tex.destroy();
+		} catch {
+			// Failed to destroy
+		}
 
-    try {
-      regl.destroy();
-    } catch {
-      // Failed to destroy
-    }
+		try {
+			regl.destroy();
+		} catch {
+			// Failed to destroy
+		}
 
-    try {
-      tick.cancel();
-    } catch {
-      // Failed to cancel tick
-    }
-  }
+		try {
+			tick.cancel();
+		} catch {
+			// Failed to cancel tick
+		}
+	}
 };

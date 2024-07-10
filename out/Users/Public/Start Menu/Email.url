@@ -1,5 +1,5 @@
 [InternetShortcut]
 BaseURL=Index
 Comment=Open Index Application
-IconFile=/System/Icons/16x16/outlookemail.png
+IconFile=./System/Icons/16x16/outlookemail.png
 URL=/Index

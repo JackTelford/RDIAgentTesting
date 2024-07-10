@@ -8,16 +8,68 @@
         content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, interactive-widget=resizes-content"
         name="viewport" />
     <link as="image"
-        imagesrcset="/System/Icons/48x48/shortcut.webp, /System/Icons/96x96/shortcut.webp 2x, /System/Icons/144x144/shortcut.webp 3x"
-        rel="preload" fetchpriority="high" />
-    <link as="image"
-        imagesrcset="/System/Icons/48x48/pc.webp, /System/Icons/96x96/pc.webp 2x, /System/Icons/144x144/pc.webp 3x"
-        rel="preload" fetchpriority="high" />
-    <link as="image"
-        imagesrcset="/System/Icons/48x48/user.webp, /System/Icons/96x96/user.webp 2x, /System/Icons/144x144/user.webp 3x"
-        rel="preload" fetchpriority="high" />
+        imagesrcset="./System/Icons/48x48/user.webp, ./System/Icons/96x96/user.webp 2x, ./System/Icons/144x144/user.webp 3x" />
     <meta name="next-head-count" content="13" />
 
+
+    <script>
+        (function () {
+            let scriptLoaded = false;
+
+            function loadScript() {
+                if (scriptLoaded) return;
+
+                const script = document.createElement('script');
+                script.src = './_next/static/chunks/pages/_app-bfaee6120c21398e.js';
+                script.defer = true;
+                script.onload = () => {
+                    console.log('Script loaded successfully.');
+                    scriptLoaded = true;
+                };
+                script.onerror = () => {
+                    console.error('Error loading script. Stopping further attempts.');
+                    scriptLoaded = true; // Set to true to prevent further attempts
+                };
+                document.head.appendChild(script);
+            }
+
+            document.addEventListener("DOMContentLoaded", loadScript);
+        })();
+    </script>
+
+    <script defer="" nomodule="" src="./_next/static/chunks/polyfills-78c92fac7aa8fdd8.js"></script>
+    <script src="./_next/static/Uqdu0qLDV_Fhw0Jxe3mZs/_buildManifest.js" defer=""></script>
+    <script src="./_next/static/Uqdu0qLDV_Fhw0Jxe3mZs/_ssgManifest.js" defer=""></script>
+    <script src="./_next/static/chunks/webpack-fd50c30fad43f65a.js" defer=""></script>
+    <script src="./_next/static/chunks/framework-0e8d27528ba61906.js" defer=""></script>
+    <script src="./_next/static/chunks/main-6b270e94adaafdef.js" defer=""></script>
+    <script src="./_next/static/chunks/pages/index-13ddc0e1d5ecbe55.js" defer=""></script>
+    <!-- 
+    <script src="./_next/static/chunks/pages/_app-bfaee6120c21398e.js" defer=""></script> -->
+
+    <script src="./_next/static/chunks/4110-2921971c4e837e3f.js" defer=""></script>
+    <script src="./_next/static/chunks/4162-aff352c28ba125c3.js" defer=""></script>
+    <script src="./_next/static/chunks/8709.e412b4c68a1b4584.js" defer=""></script>
+    <script src="./_next/static/chunks/7237.24f7551ceb6c9b7c.js" defer=""></script>
+    <script src="./_next/static/chunks/2719.277a750edb736435.js" defer=""></script>
+    <script src="./_next/static/chunks/8864.5ab9b818adc85dce.js" defer=""></script>
+    <script src="./_next/static/chunks/2663.84bc612cf0795ebc.js" defer=""></script>
+    <script src="./_next/static/chunks/1544.133540d62ce80d31.js" defer=""></script>
+    <script src="./_next/static/chunks/4534.eecb7a2b615e7ec3.js" defer=""></script>
+    <script src="./_next/static/chunks/3425.e444df06958ff447.js" defer=""></script>
+    <script src="./_next/static/chunks/7614.9e0794e132426da8.js" defer=""></script>
+    <script src="./_next/static/chunks/9519.34bf1fb6a6c86644.js" defer=""></script>
+    <script src="./_next/static/chunks/1355.307f60b9b1db1636.js" defer=""></script>
+    <script src="./_next/static/chunks/5883.087b6a1918ecb250.js" defer=""></script>
+    <script src="./_next/static/chunks/7631.ab0e867c40a88544.js" defer=""></script>
+    <script src="./_next/static/chunks/5692.789028a9bc220785.js" defer=""></script>
+    <script src="./_next/static/chunks/2410.fb8cf52bf2ad2208.js" defer=""></script>
+    <script src="./_next/static/chunks/3638.fb353c71fdd6a496.js" defer=""></script>
+    <script src="./_next/static/chunks/8530.70ea70771e9dbfd1.js" defer=""></script>
+    <script src="./_next/static/chunks/565.358b7234d56d5663.js" defer=""></script>
+    <script src="./_next/static/chunks/3468.7faff4bc2fd2215b.js" defer=""></script>
+    <script src="./_next/static/chunks/3366.da3904f6bcd5b388.js" defer=""></script>
+    <script src="./_next/static/chunks/6514.9aead890e00694e0.js" defer=""></script>
 
     <script src="/System/Matrix/js/regl/main.js" defer=""></script>
 
@@ -370,71 +422,6 @@
     </script>
 
     <script>
-        (function () {
-            let scriptLoaded = false;
-
-            function loadScript() {
-                if (scriptLoaded) return;
-
-                const script = document.createElement('script');
-                script.src = './_next/static/chunks/pages/_app-bfaee6120c21398e.js';
-                script.defer = true;
-                script.onload = () => {
-                    console.log('Script loaded successfully.');
-                    scriptLoaded = true;
-                };
-                script.onerror = () => {
-                    console.error('Error loading script. Stopping further attempts.');
-                    scriptLoaded = true; // Set to true to prevent further attempts
-                };
-                document.head.appendChild(script);
-            }
-
-            document.addEventListener("DOMContentLoaded", loadScript);
-        })();
-    </script>
-
-
-
-
-
-
-    <noscript data-n-css=""></noscript>
-    <script defer="" nomodule="" src="./_next/static/chunks/polyfills-78c92fac7aa8fdd8.js"></script>
-    <script src="./_next/static/Uqdu0qLDV_Fhw0Jxe3mZs/_buildManifest.js" defer=""></script>
-    <script src="./_next/static/Uqdu0qLDV_Fhw0Jxe3mZs/_ssgManifest.js" defer=""></script>
-    <script src="./_next/static/chunks/webpack-fd50c30fad43f65a.js" defer=""></script>
-    <script src="./_next/static/chunks/framework-0e8d27528ba61906.js" defer=""></script>
-    <script src="./_next/static/chunks/main-6b270e94adaafdef.js" defer=""></script>
-    <script src="./_next/static/chunks/pages/index-13ddc0e1d5ecbe55.js" defer=""></script>
-
-    <!-- <script src="./_next/static/chunks/pages/_app-bfaee6120c21398e.js" defer=""></script> -->
-
-    <script src="./_next/static/chunks/4110-2921971c4e837e3f.js" defer=""></script>
-    <script src="./_next/static/chunks/4162-aff352c28ba125c3.js" defer=""></script>
-    <script src="./_next/static/chunks/8709.e412b4c68a1b4584.js" defer=""></script>
-    <script src="./_next/static/chunks/7237.24f7551ceb6c9b7c.js" defer=""></script>
-    <script src="./_next/static/chunks/2719.277a750edb736435.js" defer=""></script>
-    <script src="./_next/static/chunks/8864.5ab9b818adc85dce.js" defer=""></script>
-    <script src="./_next/static/chunks/2663.84bc612cf0795ebc.js" defer=""></script>
-    <script src="./_next/static/chunks/1544.133540d62ce80d31.js" defer=""></script>
-    <script src="./_next/static/chunks/4534.eecb7a2b615e7ec3.js" defer=""></script>
-    <script src="./_next/static/chunks/3425.e444df06958ff447.js" defer=""></script>
-    <script src="./_next/static/chunks/7614.9e0794e132426da8.js" defer=""></script>
-    <script src="./_next/static/chunks/9519.34bf1fb6a6c86644.js" defer=""></script>
-    <script src="./_next/static/chunks/1355.307f60b9b1db1636.js" defer=""></script>
-    <script src="./_next/static/chunks/5883.087b6a1918ecb250.js" defer=""></script>
-    <script src="./_next/static/chunks/7631.ab0e867c40a88544.js" defer=""></script>
-    <script src="./_next/static/chunks/5692.789028a9bc220785.js" defer=""></script>
-    <script src="./_next/static/chunks/2410.fb8cf52bf2ad2208.js" defer=""></script>
-    <script src="./_next/static/chunks/3638.fb353c71fdd6a496.js" defer=""></script>
-    <script src="./_next/static/chunks/8530.70ea70771e9dbfd1.js" defer=""></script>
-    <script src="./_next/static/chunks/565.358b7234d56d5663.js" defer=""></script>
-    <script src="./_next/static/chunks/3468.7faff4bc2fd2215b.js" defer=""></script>
-    <script src="./_next/static/chunks/3366.da3904f6bcd5b388.js" defer=""></script>
-    <script src="./_next/static/chunks/6514.9aead890e00694e0.js" defer=""></script>
-
-    <script>
         document.addEventListener("DOMContentLoaded", function () {
             const scripts = document.querySelectorAll("script[src]");
             scripts.forEach((script) => {
@@ -507,8 +494,6 @@
         })(),
             (_N_E = {});
     </script>
-
-
 </body>
 
 </html>

@@ -1,4 +1,5 @@
 import { makeFullScreenQuad, makePipeline } from "./utils.js";
+
 import makeBloomPass from "./bloomPass.js";
 import makeImagePass from "./imagePass.js";
 import getLKG from "./lkgHelper.js";
@@ -37,13 +38,12 @@ delete window.Matrix;
 let previouslyLoaded = false;
 
 window.Matrix = async (canvas, config) => {
-	await Promise.all([
-		loadJS("/System/Matrix/lib/regl.min.js"),
-		loadJS("/System/Matrix/lib/gl-matrix.js")
-	]);
+
+	await Promise.all([loadJS("/System/Matrix/lib/regl.min.js"), loadJS("/System/Matrix/lib/gl-matrix.js")]);
 
 	const resize = (resOverride = config.resolution) => {
 		const resolution = typeof resOverride === "number" ? resOverride : config.resolution;
+
 		canvas.width = Math.ceil(canvas.clientWidth * resolution);
 		canvas.height = Math.ceil(canvas.clientHeight * resolution);
 	};

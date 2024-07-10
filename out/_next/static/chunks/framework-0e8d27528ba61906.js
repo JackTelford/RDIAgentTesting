@@ -2203,13 +2203,13 @@
                     if (n) {
                         var t = n;
                         if (!lm(e, n)) {
-                            if (lh(e)) throw Error(f(418));
+                            // if (lh(e)) throw Error(f(418));
                             n = rC(t.nextSibling);
                             var r = ls;
                             n && lm(e, n) ? lp(r, t) : ((e.flags = (-4097 & e.flags) | 2), (lf = !1), (ls = e));
                         }
                     } else {
-                        if (lh(e)) throw Error(f(418));
+                        // if (lh(e)) throw Error(f(418));
                         (e.flags = (-4097 & e.flags) | 2), (lf = !1), (ls = e);
                     }
                 }
@@ -2222,7 +2222,7 @@
                 if (e !== ls) return !1;
                 if (!lf) return lv(e), (lf = !0), !1;
                 if (((n = 3 !== e.tag) && !(n = 5 !== e.tag) && (n = "head" !== (n = e.type) && "body" !== n && !rb(e.type, e.memoizedProps)), n && (n = lc))) {
-                    if (lh(e)) throw (lb(), Error(f(418)));
+                    // if (lh(e)) throw (lb(), Error(f(418)));
                     for (; n;) lp(e, n), (n = rC(n.nextSibling));
                 }
                 if ((lv(e), 13 === e.tag)) {
